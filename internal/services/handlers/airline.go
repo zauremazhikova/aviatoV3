@@ -33,9 +33,7 @@ func CreateAirline(c *fiber.Ctx) error {
 }
 
 func Update(c *fiber.Ctx) error {
-	type updateAirline struct {
-		Name string `json:"name"`
-	}
+
 	id := c.Params("id")
 	airline, err := repositories.GetAirline(id)
 
@@ -43,7 +41,7 @@ func Update(c *fiber.Ctx) error {
 		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Airline not found", "data": err})
 	}
 
-	var updateAirlineData updateAirline
+	var updateAirlineData transport.UpdateAirline
 	err = c.BodyParser(&updateAirlineData)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Something's wrong with your input", "data": err})
@@ -57,7 +55,7 @@ func Update(c *fiber.Ctx) error {
 	return c.Status(201).JSON(fiber.Map{"status": "success", "message": "Airline has Updated", "data": airline})
 }
 
-func Delete(c *fiber.Ctx) error {
+func DeleteAirline(c *fiber.Ctx) error {
 
 	id := c.Params("id")
 	airline, err := repositories.GetAirline(id)
