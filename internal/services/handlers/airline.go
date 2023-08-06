@@ -3,6 +3,7 @@ package handlers
 import (
 	"aviatoV3/internal/repositories"
 	"aviatoV3/internal/services/transport"
+	"errors"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -32,27 +33,31 @@ func CreateAirline(c *fiber.Ctx) error {
 
 }
 
-func Update(c *fiber.Ctx) error {
+func UpdateAirline(c *fiber.Ctx) error {
 
 	id := c.Params("id")
-	airline, err := repositories.GetAirline(id)
 
+	airline, err := repositories.GetAirline(id)
 	if err != nil {
-		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Airline not found", "data": err})
+		return transport.ResponseAirline(c, airline, err)
 	}
 
-	var updateAirlineData transport.UpdateAirline
-	err = c.BodyParser(&updateAirlineData)
+	if airline.ID == "" {
+		return transport.ResponseAirline(c, airline, errors.New("airline not found"))
+	}
+
+	updateAirlineData, err := transport.ValidateUpdateData(c)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Something's wrong with your input", "data": err})
+		return transport.ResponseAirline(c, airline, err)
 	}
 
 	airline.Name = updateAirlineData.Name
 	err = repositories.UpdateAirline(airline)
+
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Airline has not updated", "data": err})
+		return transport.ResponseAirline(c, airline, err)
 	}
-	return c.Status(201).JSON(fiber.Map{"status": "success", "message": "Airline has Updated", "data": airline})
+	return transport.ResponseAirline(c, airline, err)
 }
 
 func DeleteAirline(c *fiber.Ctx) error {
@@ -61,13 +66,13 @@ func DeleteAirline(c *fiber.Ctx) error {
 	airline, err := repositories.GetAirline(id)
 
 	if airline.ID == "" {
-		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Airline not found", "data": nil})
+		return transport.ResponseAirline(c, airline, errors.New("airline not found"))
 	}
 
 	err = repositories.DeleteAirline(id)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"status": "error", "message": "Failed to delete Airline", "data": nil})
+		return transport.ResponseAirline(c, airline, err)
 	}
 
-	return c.Status(201).JSON(fiber.Map{"status": "success", "message": "Airline deleted"})
+	return transport.ResponseAirline(c, airline, err)
 }

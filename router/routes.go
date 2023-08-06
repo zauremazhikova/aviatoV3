@@ -21,15 +21,12 @@ func SetupRoutes(app *fiber.App) {
 	airlines.Get("/", handlers.GetAllAirlines)
 	airlines.Get("/:id", handlers.GetSingleAirline)
 	airlines.Post("/", handlers.CreateAirline)
+	airlines.Put("/:id", handlers.UpdateAirline)
+	airlines.Delete("/:id", handlers.DeleteAirline)
 
 	// main
 	/*
 		api.Get("/", handlers.GetFlightsByOriginAndDestination)
-
-
-
-		airlines.Put("/:id", airline.Update)
-		airlines.Delete("/:id", airline.Delete)
 
 		// booking
 		bookings.Get("/", booking.GetAll)
