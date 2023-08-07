@@ -20,6 +20,8 @@ type UpdateAirline struct {
 	Name string `json:"name"`
 }
 
+// Валидация входящих данных
+
 func ValidateAirlineInsertData(c *fiber.Ctx) (*entities.Airline, error) {
 	airline := new(entities.Airline)
 	err := c.BodyParser(airline)
@@ -31,6 +33,7 @@ func ValidateAirlineInsertData(c *fiber.Ctx) (*entities.Airline, error) {
 }
 
 func ValidateAirlineUpdateData(c *fiber.Ctx) (*UpdateAirline, error) {
+
 	var updateAirlineData UpdateAirline
 	err := c.BodyParser(&updateAirlineData)
 
@@ -39,6 +42,8 @@ func ValidateAirlineUpdateData(c *fiber.Ctx) (*UpdateAirline, error) {
 	}
 	return &updateAirlineData, nil
 }
+
+// Ответы при наличии ошибок
 
 func ResponseAirlineNotFound(c *fiber.Ctx, airline *entities.Airline, err error) error {
 
@@ -58,6 +63,8 @@ func ResponseAirlineInputError(err error) Response {
 	}
 	return response
 }
+
+// Ответы
 
 func ResponseAirlines(c *fiber.Ctx, airlines []*entities.Airline, err error) error {
 
