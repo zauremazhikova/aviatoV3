@@ -3,7 +3,6 @@ package handlers
 import (
 	"aviatoV3/internal/repositories"
 	"aviatoV3/internal/services/transport"
-	"errors"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -24,40 +23,34 @@ func GetSingleAirline(c *fiber.Ctx) error {
 
 func CreateAirline(c *fiber.Ctx) error {
 
-	airline, err := transport.ValidateInsertData(c)
+	airline, err := transport.ValidateAirlineInsertData(c)
 	if err != nil {
 		return err
 	}
 	err = repositories.CreateAirline(airline)
-	return transport.ResponseAirline(c, airline, err)
+	return transport.ResponseAirlineCreate(c, err)
 
 }
 
 func UpdateAirline(c *fiber.Ctx) error {
 
 	id := c.Params("id")
-
 	airline, err := repositories.GetAirline(id)
+
+	err = transport.ResponseAirlineNotFound(c, airline, err)
 	if err != nil {
-		return transport.ResponseAirline(c, airline, err)
+		return err
 	}
 
-	if airline.ID == "" {
-		return transport.ResponseAirline(c, airline, errors.New("airline not found"))
-	}
-
-	updateAirlineData, err := transport.ValidateUpdateData(c)
+	updateAirlineData, err := transport.ValidateAirlineUpdateData(c)
 	if err != nil {
-		return transport.ResponseAirline(c, airline, err)
+		return err
 	}
 
 	airline.Name = updateAirlineData.Name
 	err = repositories.UpdateAirline(airline)
 
-	if err != nil {
-		return transport.ResponseAirline(c, airline, err)
-	}
-	return transport.ResponseAirline(c, airline, err)
+	return transport.ResponseAirlineUpdate(c, err)
 }
 
 func DeleteAirline(c *fiber.Ctx) error {
@@ -65,14 +58,12 @@ func DeleteAirline(c *fiber.Ctx) error {
 	id := c.Params("id")
 	airline, err := repositories.GetAirline(id)
 
-	if airline.ID == "" {
-		return transport.ResponseAirline(c, airline, errors.New("airline not found"))
+	err = transport.ResponseAirlineNotFound(c, airline, err)
+	if err != nil {
+		return err
 	}
 
 	err = repositories.DeleteAirline(id)
-	if err != nil {
-		return transport.ResponseAirline(c, airline, err)
-	}
+	return transport.ResponseAirlineDelete(c, err)
 
-	return transport.ResponseAirline(c, airline, err)
 }
