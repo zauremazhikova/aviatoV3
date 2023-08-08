@@ -1,0 +1,166 @@
+package transport
+
+import (
+	"aviatoV3/internal/entities"
+	"github.com/gofiber/fiber/v2"
+)
+
+type ResponseStructureCountry struct {
+	StatusCode int                 `json:"statusCode"`
+	Data       ResponseDataCountry `json:"data"`
+	Error      error               `json:"error"`
+	Message    string              `json:"message"`
+}
+
+type ResponseDataCountry struct {
+	Countries []*entities.Country `json:"countries"`
+}
+
+type UpdateCountry struct {
+	Name string `json:"name"`
+}
+
+// Валидация входящих данных
+
+func ValidateCountryInsertData(c *fiber.Ctx) (*entities.Country, error) {
+	country := new(entities.Country)
+	err := c.BodyParser(country)
+
+	if err != nil {
+		return country, c.JSON(ResponseCountryInputError(err))
+	}
+	return country, nil
+}
+
+func ValidateCountryUpdateData(c *fiber.Ctx) (*UpdateCountry, error) {
+
+	var updateCountryData UpdateCountry
+	err := c.BodyParser(&updateCountryData)
+
+	if err != nil {
+		return &updateCountryData, c.JSON(ResponseCountryInputError(err))
+	}
+	return &updateCountryData, nil
+}
+
+// Ответы при наличии ошибок
+
+func ResponseCountryNotFound(c *fiber.Ctx, country *entities.Country, err error) error {
+
+	if err != nil || country.ID == "" {
+		return ResponseCountry(c, country, err)
+	}
+	return nil
+}
+
+func ResponseCountryInputError(err error) ResponseStructureCountry {
+
+	response := ResponseStructureCountry{
+		StatusCode: 500,
+		Data:       ResponseDataCountry{},
+		Error:      err,
+		Message:    "Something wrong with your input data",
+	}
+	return response
+}
+
+// Ответы
+
+func ResponseCountries(c *fiber.Ctx, countries []*entities.Country, err error) error {
+
+	data := ResponseDataCountry{Countries: countries}
+	var statusCode int
+	var message string
+	if err != nil {
+		statusCode = 500
+		message = "Unexpected error"
+	} else if len(countries) == 0 {
+		statusCode = 404
+		message = "Countries not found"
+	} else {
+		statusCode = 201
+		message = "Countries found"
+	}
+
+	response := ResponseStructureCountry{
+		StatusCode: statusCode,
+		Data:       data,
+		Error:      err,
+		Message:    message,
+	}
+	return c.JSON(response)
+
+}
+
+func ResponseCountry(c *fiber.Ctx, country *entities.Country, err error) error {
+
+	countries := make([]*entities.Country, 0)
+	if country.ID != "" {
+		countries = append(countries, country)
+	}
+	return ResponseCountries(c, countries, err)
+
+}
+
+func ResponseCountryCreate(c *fiber.Ctx, err error) error {
+
+	var statusCode int
+	var message string
+
+	if err != nil {
+		statusCode = 500
+		message = "Unexpected error"
+	} else {
+		statusCode = 201
+		message = "Country has created"
+	}
+	response := ResponseStructureCountry{
+		StatusCode: statusCode,
+		Error:      err,
+		Message:    message,
+	}
+	return c.JSON(response)
+
+}
+
+func ResponseCountryUpdate(c *fiber.Ctx, err error) error {
+
+	var statusCode int
+	var message string
+
+	if err != nil {
+		statusCode = 500
+		message = "Unexpected error"
+	} else {
+		statusCode = 201
+		message = "Country has updated"
+	}
+	response := ResponseStructureCountry{
+		StatusCode: statusCode,
+		Error:      err,
+		Message:    message,
+	}
+	return c.JSON(response)
+
+}
+
+func ResponseCountryDelete(c *fiber.Ctx, err error) error {
+
+	var statusCode int
+	var message string
+
+	if err != nil {
+		statusCode = 500
+		message = "Unexpected error"
+	} else {
+		statusCode = 201
+		message = "Country has deleted"
+	}
+	response := ResponseStructureCountry{
+		StatusCode: statusCode,
+		Error:      err,
+		Message:    message,
+	}
+	return c.JSON(response)
+
+}

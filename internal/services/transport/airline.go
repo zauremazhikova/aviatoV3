@@ -5,14 +5,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type Response struct {
-	StatusCode int    `json:"statusCode"`
-	Data       Data   `json:"data"`
-	Error      error  `json:"error"`
-	Message    string `json:"message"`
+type ResponseStructureAirline struct {
+	StatusCode int                 `json:"statusCode"`
+	Data       ResponseDataAirline `json:"data"`
+	Error      error               `json:"error"`
+	Message    string              `json:"message"`
 }
 
-type Data struct {
+type ResponseDataAirline struct {
 	Airlines []*entities.Airline `json:"airlines"`
 }
 
@@ -53,11 +53,11 @@ func ResponseAirlineNotFound(c *fiber.Ctx, airline *entities.Airline, err error)
 	return nil
 }
 
-func ResponseAirlineInputError(err error) Response {
+func ResponseAirlineInputError(err error) ResponseStructureAirline {
 
-	response := Response{
+	response := ResponseStructureAirline{
 		StatusCode: 500,
-		Data:       Data{},
+		Data:       ResponseDataAirline{},
 		Error:      err,
 		Message:    "Something wrong with your input data",
 	}
@@ -68,7 +68,7 @@ func ResponseAirlineInputError(err error) Response {
 
 func ResponseAirlines(c *fiber.Ctx, airlines []*entities.Airline, err error) error {
 
-	data := Data{Airlines: airlines}
+	data := ResponseDataAirline{Airlines: airlines}
 	var statusCode int
 	var message string
 	if err != nil {
@@ -82,7 +82,7 @@ func ResponseAirlines(c *fiber.Ctx, airlines []*entities.Airline, err error) err
 		message = "Airlines found"
 	}
 
-	response := Response{
+	response := ResponseStructureAirline{
 		StatusCode: statusCode,
 		Data:       data,
 		Error:      err,
@@ -114,7 +114,7 @@ func ResponseAirlineCreate(c *fiber.Ctx, err error) error {
 		statusCode = 201
 		message = "Airline has created"
 	}
-	response := Response{
+	response := ResponseStructureAirline{
 		StatusCode: statusCode,
 		Error:      err,
 		Message:    message,
@@ -135,7 +135,7 @@ func ResponseAirlineUpdate(c *fiber.Ctx, err error) error {
 		statusCode = 201
 		message = "Airline has updated"
 	}
-	response := Response{
+	response := ResponseStructureAirline{
 		StatusCode: statusCode,
 		Error:      err,
 		Message:    message,
@@ -156,7 +156,7 @@ func ResponseAirlineDelete(c *fiber.Ctx, err error) error {
 		statusCode = 201
 		message = "Airline has deleted"
 	}
-	response := Response{
+	response := ResponseStructureAirline{
 		StatusCode: statusCode,
 		Error:      err,
 		Message:    message,
