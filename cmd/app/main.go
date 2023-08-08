@@ -1,7 +1,7 @@
 package main
 
 import (
-	"aviatoV3/router"
+	"aviatoV3/cmd/router"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/log"
 	"github.com/gofiber/fiber/v2/middleware/cors"
