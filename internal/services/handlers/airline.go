@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"aviatoV3/internal/entities"
 	"aviatoV3/internal/repositories"
 	"aviatoV3/internal/services/transport"
 	"github.com/gofiber/fiber/v2"
@@ -23,10 +24,13 @@ func GetSingleAirline(c *fiber.Ctx) error {
 
 func CreateAirline(c *fiber.Ctx) error {
 
-	airline, err := transport.ValidateAirlineInsertData(c)
+	insertStruct, err := transport.ValidateAirlineInsertData(c)
 	if err != nil {
 		return err
 	}
+	airline := new(entities.Airline)
+	airline.Name = insertStruct.Name
+
 	err = repositories.CreateAirline(airline)
 	return transport.ResponseAirlineCreate(c, err)
 

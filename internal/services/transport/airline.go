@@ -15,25 +15,30 @@ type ResponseDataAirline struct {
 	Airlines []*entities.Airline `json:"airlines"`
 }
 
-type UpdateAirline struct {
+type UpdateAirlineStructure struct {
+	Name string `json:"name"`
+}
+
+type InsertAirlineStructure struct {
 	Name string `json:"name"`
 }
 
 // Валидация входящих данных
 
-func ValidateAirlineInsertData(c *fiber.Ctx) (*entities.Airline, error) {
-	airline := new(entities.Airline)
-	err := c.BodyParser(airline)
+func ValidateAirlineInsertData(c *fiber.Ctx) (*InsertAirlineStructure, error) {
+
+	var insertAirlineStructure InsertAirlineStructure
+	err := c.BodyParser(&insertAirlineStructure)
 
 	if err != nil {
-		return airline, c.Status(500).JSON(ResponseAirlineInputError(err))
+		return &insertAirlineStructure, c.Status(500).JSON(ResponseAirlineInputError(err))
 	}
-	return airline, nil
+	return &insertAirlineStructure, nil
 }
 
-func ValidateAirlineUpdateData(c *fiber.Ctx) (*UpdateAirline, error) {
+func ValidateAirlineUpdateData(c *fiber.Ctx) (*UpdateAirlineStructure, error) {
 
-	var updateAirlineData UpdateAirline
+	var updateAirlineData UpdateAirlineStructure
 	err := c.BodyParser(&updateAirlineData)
 
 	if err != nil {

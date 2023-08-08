@@ -15,25 +15,29 @@ type ResponseDataCountry struct {
 	Countries []*entities.Country `json:"countries"`
 }
 
-type UpdateCountry struct {
+type UpdateCountryStructure struct {
+	Name string `json:"name"`
+}
+
+type InsertCountryStructure struct {
 	Name string `json:"name"`
 }
 
 // Валидация входящих данных
 
-func ValidateCountryInsertData(c *fiber.Ctx) (*entities.Country, error) {
-	country := new(entities.Country)
-	err := c.BodyParser(country)
+func ValidateCountryInsertData(c *fiber.Ctx) (*InsertCountryStructure, error) {
+	var insertCountryStructure InsertCountryStructure
+	err := c.BodyParser(&insertCountryStructure)
 
 	if err != nil {
-		return country, c.Status(500).JSON(ResponseCountryInputError(err))
+		return &insertCountryStructure, c.Status(500).JSON(ResponseCountryInputError(err))
 	}
-	return country, nil
+	return &insertCountryStructure, nil
 }
 
-func ValidateCountryUpdateData(c *fiber.Ctx) (*UpdateCountry, error) {
+func ValidateCountryUpdateData(c *fiber.Ctx) (*UpdateCountryStructure, error) {
 
-	var updateCountryData UpdateCountry
+	var updateCountryData UpdateCountryStructure
 	err := c.BodyParser(&updateCountryData)
 
 	if err != nil {

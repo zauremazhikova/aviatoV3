@@ -15,25 +15,29 @@ type ResponseDataPassenger struct {
 	Passengers []*entities.Passenger `json:"passengers"`
 }
 
-type UpdatePassenger struct {
+type UpdatePassengerStructure struct {
+	Name string `json:"name"`
+}
+
+type InsertPassengerStructure struct {
 	Name string `json:"name"`
 }
 
 // Валидация входящих данных
 
-func ValidatePassengerInsertData(c *fiber.Ctx) (*entities.Passenger, error) {
-	passenger := new(entities.Passenger)
-	err := c.BodyParser(passenger)
+func ValidatePassengerInsertData(c *fiber.Ctx) (*InsertPassengerStructure, error) {
+	var insertPassengerStructure InsertPassengerStructure
+	err := c.BodyParser(&insertPassengerStructure)
 
 	if err != nil {
-		return passenger, c.Status(500).JSON(ResponsePassengerInputError(err))
+		return &insertPassengerStructure, c.Status(500).JSON(ResponsePassengerInputError(err))
 	}
-	return passenger, nil
+	return &insertPassengerStructure, nil
 }
 
-func ValidatePassengerUpdateData(c *fiber.Ctx) (*UpdatePassenger, error) {
+func ValidatePassengerUpdateData(c *fiber.Ctx) (*UpdatePassengerStructure, error) {
 
-	var updatePassengerData UpdatePassenger
+	var updatePassengerData UpdatePassengerStructure
 	err := c.BodyParser(&updatePassengerData)
 
 	if err != nil {
