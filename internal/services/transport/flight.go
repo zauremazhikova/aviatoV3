@@ -16,7 +16,16 @@ type ResponseDataFlight struct {
 	Flights []*entities.Flight `json:"flights"`
 }
 
-type UpdateFlight struct {
+type UpdateFlightStructure struct {
+	FlightNumber  string    `json:"flightNumber"`
+	DirectionID   string    `json:"directionID"`
+	DepartureTime time.Time `json:"departureTime"`
+	ArrivalTime   time.Time `json:"arrivalTime"`
+	SeatsNumber   int       `json:"seatsNumber"`
+	Price         float64   `json:"price"`
+}
+
+type InsertFlightStructure struct {
 	FlightNumber  string    `json:"flightNumber"`
 	DirectionID   string    `json:"directionID"`
 	DepartureTime time.Time `json:"departureTime"`
@@ -27,19 +36,19 @@ type UpdateFlight struct {
 
 // Валидация входящих данных
 
-func ValidateFlightInsertData(c *fiber.Ctx) (*entities.Flight, error) {
-	flight := new(entities.Flight)
-	err := c.BodyParser(flight)
+func ValidateFlightInsertData(c *fiber.Ctx) (*InsertFlightStructure, error) {
+	var insertFlightStructure InsertFlightStructure
+	err := c.BodyParser(&insertFlightStructure)
 
 	if err != nil {
-		return flight, c.Status(500).JSON(ResponseFlightInputError(err))
+		return &insertFlightStructure, c.Status(500).JSON(ResponseFlightInputError(err))
 	}
-	return flight, nil
+	return &insertFlightStructure, nil
 }
 
-func ValidateFlightUpdateData(c *fiber.Ctx) (*UpdateFlight, error) {
+func ValidateFlightUpdateData(c *fiber.Ctx) (*UpdateFlightStructure, error) {
 
-	var updateFlightData UpdateFlight
+	var updateFlightData UpdateFlightStructure
 	err := c.BodyParser(&updateFlightData)
 
 	if err != nil {
@@ -66,6 +75,17 @@ func ResponseFlightInputError(err error) ResponseStructureFlight {
 		Message: "Something wrong with your input data",
 	}
 	return response
+}
+
+func ResponseFlightDirectionNotFound(c *fiber.Ctx, direction *entities.Direction, err error) error {
+	if err != nil || direction.ID == "" {
+		response := ResponseStructureFlight{
+			Error:   err,
+			Message: "Direction not found",
+		}
+		return c.Status(404).JSON(response)
+	}
+	return nil
 }
 
 // Ответы

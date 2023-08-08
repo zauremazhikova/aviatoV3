@@ -15,7 +15,13 @@ type ResponseDataDirection struct {
 	Directions []*entities.Direction `json:"directions"`
 }
 
-type UpdateDirection struct {
+type UpdateDirectionStructure struct {
+	OriginCityID      string `json:"originCityID"`
+	DestinationCityID string `json:"destinationCityID"`
+	AirlineID         string `json:"airlineID"`
+}
+
+type InsertDirectionStructure struct {
 	OriginCityID      string `json:"originCityID"`
 	DestinationCityID string `json:"destinationCityID"`
 	AirlineID         string `json:"airlineID"`
@@ -23,19 +29,19 @@ type UpdateDirection struct {
 
 // Валидация входящих данных
 
-func ValidateDirectionInsertData(c *fiber.Ctx) (*entities.Direction, error) {
-	direction := new(entities.Direction)
-	err := c.BodyParser(direction)
+func ValidateDirectionInsertData(c *fiber.Ctx) (*InsertDirectionStructure, error) {
+	var insertDirectionStructure InsertDirectionStructure
+	err := c.BodyParser(&insertDirectionStructure)
 
 	if err != nil {
-		return direction, c.Status(500).JSON(ResponseDirectionInputError(err))
+		return &insertDirectionStructure, c.Status(500).JSON(ResponseDirectionInputError(err))
 	}
-	return direction, nil
+	return &insertDirectionStructure, nil
 }
 
-func ValidateDirectionUpdateData(c *fiber.Ctx) (*UpdateDirection, error) {
+func ValidateDirectionUpdateData(c *fiber.Ctx) (*UpdateDirectionStructure, error) {
 
-	var updateDirectionData UpdateDirection
+	var updateDirectionData UpdateDirectionStructure
 	err := c.BodyParser(&updateDirectionData)
 
 	if err != nil {
@@ -62,6 +68,28 @@ func ResponseDirectionInputError(err error) ResponseStructureDirection {
 		Message: "Something wrong with your input data",
 	}
 	return response
+}
+
+func ResponseDirectionCityNotFound(c *fiber.Ctx, city *entities.City, err error) error {
+	if err != nil || city.ID == "" {
+		response := ResponseStructureDirection{
+			Error:   err,
+			Message: "City not found",
+		}
+		return c.Status(404).JSON(response)
+	}
+	return nil
+}
+
+func ResponseDirectionAirlineNotFound(c *fiber.Ctx, airline *entities.Airline, err error) error {
+	if err != nil || airline.ID == "" {
+		response := ResponseStructureDirection{
+			Error:   err,
+			Message: "Airline not found",
+		}
+		return c.Status(404).JSON(response)
+	}
+	return nil
 }
 
 // Ответы

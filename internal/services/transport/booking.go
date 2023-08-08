@@ -16,7 +16,13 @@ type ResponseDataBooking struct {
 	Bookings []*entities.Booking `json:"bookings"`
 }
 
-type UpdateBooking struct {
+type UpdateBookingStructure struct {
+	BookingNumber string `json:"bookingNumber"`
+	FlightID      string `json:"flightID"`
+	PassengerID   string `json:"passengerID"`
+}
+
+type InsertBookingStructure struct {
 	BookingNumber string `json:"bookingNumber"`
 	FlightID      string `json:"flightID"`
 	PassengerID   string `json:"passengerID"`
@@ -24,19 +30,19 @@ type UpdateBooking struct {
 
 // Валидация входящих данных
 
-func ValidateBookingInsertData(c *fiber.Ctx) (*entities.Booking, error) {
-	booking := new(entities.Booking)
-	err := c.BodyParser(booking)
+func ValidateBookingInsertData(c *fiber.Ctx) (*InsertBookingStructure, error) {
+	var insertBookingStructure InsertBookingStructure
+	err := c.BodyParser(insertBookingStructure)
 
 	if err != nil {
-		return booking, c.JSON(ResponseBookingInputError(err))
+		return &insertBookingStructure, c.JSON(ResponseBookingInputError(err))
 	}
-	return booking, nil
+	return &insertBookingStructure, nil
 }
 
-func ValidateBookingUpdateData(c *fiber.Ctx) (*UpdateBooking, error) {
+func ValidateBookingUpdateData(c *fiber.Ctx) (*UpdateBookingStructure, error) {
 
-	var updateBookingData UpdateBooking
+	var updateBookingData UpdateBookingStructure
 	err := c.BodyParser(&updateBookingData)
 
 	if err != nil {
@@ -64,6 +70,28 @@ func ResponseBookingInputError(err error) ResponseStructureBooking {
 		Message:    "Something wrong with your input data",
 	}
 	return response
+}
+
+func ResponseBookingPassengerNotFound(c *fiber.Ctx, passenger *entities.Passenger, err error) error {
+	if err != nil || passenger.ID == "" {
+		response := ResponseStructureBooking{
+			Error:   err,
+			Message: "Passenger not found",
+		}
+		return c.Status(404).JSON(response)
+	}
+	return nil
+}
+
+func ResponseBookingFlightNotFound(c *fiber.Ctx, flight *entities.Flight, err error) error {
+	if err != nil || flight.ID == "" {
+		response := ResponseStructureBooking{
+			Error:   err,
+			Message: "Flight not found",
+		}
+		return c.Status(404).JSON(response)
+	}
+	return nil
 }
 
 // Ответы

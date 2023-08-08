@@ -60,10 +60,10 @@ func UpdateCity(c *fiber.Ctx) error {
 	}
 
 	currentCountry, err := repositories.GetCountry(updateCityData.CountryID)
-	/*err = transport.ResponseCityCountryNotFound(c, currentCountry, err)
+	err = transport.ResponseCityCountryNotFound(c, currentCountry, err)
 	if err != nil {
 		return err
-	}*/
+	}
 
 	city.Name = updateCityData.Name
 	city.Country = *currentCountry
