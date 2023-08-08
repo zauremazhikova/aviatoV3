@@ -40,7 +40,7 @@ func GetCity(id string) (*entities.City, error) {
 	rows, err := db.Query("SELECT ID, NAME, COUNTRY_ID, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM cities WHERE ID = $1", id)
 	_ = db.Close()
 	if err != nil {
-		return nil, err
+		return &entities.City{}, err
 	}
 
 	var city entities.City
@@ -51,10 +51,13 @@ func GetCity(id string) (*entities.City, error) {
 			return &entities.City{}, err
 		}
 	}
-	currentCountry, _ := GetCountry(countryID)
-	city.Country = *currentCountry
+	if city.ID != "" {
+		currentCountry, _ := GetCountry(countryID)
+		city.Country = *currentCountry
+		return &city, nil
+	}
+	return &entities.City{}, err
 
-	return &city, nil
 }
 
 func CreateCity(city *entities.City) error {

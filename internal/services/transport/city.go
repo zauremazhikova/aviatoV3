@@ -5,41 +5,44 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type ResponseStructureCity struct {
-	StatusCode int              `json:"statusCode"`
-	Data       ResponseDataCity `json:"data"`
-	Error      error            `json:"error"`
-	Message    string           `json:"message"`
+type ResponseCityStructure struct {
+	Data    ResponseDataCity `json:"data"`
+	Error   error            `json:"error"`
+	Message string           `json:"message"`
 }
 
 type ResponseDataCity struct {
 	Cities []*entities.City `json:"cities"`
 }
 
-type UpdateCity struct {
+type UpdateCityStructure struct {
+	Name      string `json:"name"`
+	CountryID string `json:"countryID"`
+}
+
+type InsertCityStructure struct {
 	Name      string `json:"name"`
 	CountryID string `json:"countryID"`
 }
 
 // Валидация входящих данных
 
-func ValidateCityInsertData(c *fiber.Ctx) (*entities.City, error) {
-	city := new(entities.City)
-	err := c.BodyParser(city)
-
+func ValidateCityInsertData(c *fiber.Ctx) (*InsertCityStructure, error) {
+	var insertCityData InsertCityStructure
+	err := c.BodyParser(&insertCityData)
 	if err != nil {
-		return city, c.JSON(ResponseCityInputError(err))
+		return &insertCityData, c.JSON(ResponseCityInputError(c, err))
 	}
-	return city, nil
+	return &insertCityData, nil
 }
 
-func ValidateCityUpdateData(c *fiber.Ctx) (*UpdateCity, error) {
+func ValidateCityUpdateData(c *fiber.Ctx) (*UpdateCityStructure, error) {
 
-	var updateCityData UpdateCity
+	var updateCityData UpdateCityStructure
 	err := c.BodyParser(&updateCityData)
 
 	if err != nil {
-		return &updateCityData, c.JSON(ResponseCityInputError(err))
+		return &updateCityData, c.JSON(ResponseCityInputError(c, err))
 	}
 	return &updateCityData, nil
 }
@@ -54,15 +57,25 @@ func ResponseCityNotFound(c *fiber.Ctx, city *entities.City, err error) error {
 	return nil
 }
 
-func ResponseCityInputError(err error) ResponseStructureCity {
+func ResponseCityInputError(c *fiber.Ctx, err error) error {
 
-	response := ResponseStructureCity{
-		StatusCode: 500,
-		Data:       ResponseDataCity{},
-		Error:      err,
-		Message:    "Something wrong with your input data",
+	response := ResponseCityStructure{
+		Data:    ResponseDataCity{},
+		Error:   err,
+		Message: "Something wrong with your input data",
 	}
-	return response
+	return c.Status(500).JSON(response)
+}
+
+func ResponseCityCountryNotFound(c *fiber.Ctx, country *entities.Country, err error) error {
+	if err != nil || country.ID == "" {
+		response := ResponseCityStructure{
+			Error:   err,
+			Message: "Country not found",
+		}
+		return c.Status(404).JSON(response)
+	}
+	return nil
 }
 
 // Ответы
@@ -83,13 +96,12 @@ func ResponseCities(c *fiber.Ctx, cities []*entities.City, err error) error {
 		message = "Cities found"
 	}
 
-	response := ResponseStructureCity{
-		StatusCode: statusCode,
-		Data:       data,
-		Error:      err,
-		Message:    message,
+	response := ResponseCityStructure{
+		Data:    data,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }
 
@@ -115,12 +127,11 @@ func ResponseCityCreate(c *fiber.Ctx, err error) error {
 		statusCode = 201
 		message = "City has created"
 	}
-	response := ResponseStructureCity{
-		StatusCode: statusCode,
-		Error:      err,
-		Message:    message,
+	response := ResponseCityStructure{
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }
 
@@ -136,12 +147,11 @@ func ResponseCityUpdate(c *fiber.Ctx, err error) error {
 		statusCode = 201
 		message = "City has updated"
 	}
-	response := ResponseStructureCity{
-		StatusCode: statusCode,
-		Error:      err,
-		Message:    message,
+	response := ResponseCityStructure{
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }
 
@@ -157,11 +167,10 @@ func ResponseCityDelete(c *fiber.Ctx, err error) error {
 		statusCode = 201
 		message = "City has deleted"
 	}
-	response := ResponseStructureCity{
-		StatusCode: statusCode,
-		Error:      err,
-		Message:    message,
+	response := ResponseCityStructure{
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }

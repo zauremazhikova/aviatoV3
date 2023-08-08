@@ -6,10 +6,9 @@ import (
 )
 
 type ResponseStructurePassenger struct {
-	StatusCode int                   `json:"statusCode"`
-	Data       ResponseDataPassenger `json:"data"`
-	Error      error                 `json:"error"`
-	Message    string                `json:"message"`
+	Data    ResponseDataPassenger `json:"data"`
+	Error   error                 `json:"error"`
+	Message string                `json:"message"`
 }
 
 type ResponseDataPassenger struct {
@@ -27,7 +26,7 @@ func ValidatePassengerInsertData(c *fiber.Ctx) (*entities.Passenger, error) {
 	err := c.BodyParser(passenger)
 
 	if err != nil {
-		return passenger, c.JSON(ResponsePassengerInputError(err))
+		return passenger, c.Status(500).JSON(ResponsePassengerInputError(err))
 	}
 	return passenger, nil
 }
@@ -38,7 +37,7 @@ func ValidatePassengerUpdateData(c *fiber.Ctx) (*UpdatePassenger, error) {
 	err := c.BodyParser(&updatePassengerData)
 
 	if err != nil {
-		return &updatePassengerData, c.JSON(ResponsePassengerInputError(err))
+		return &updatePassengerData, c.Status(500).JSON(ResponsePassengerInputError(err))
 	}
 	return &updatePassengerData, nil
 }
@@ -56,10 +55,9 @@ func ResponsePassengerNotFound(c *fiber.Ctx, passenger *entities.Passenger, err 
 func ResponsePassengerInputError(err error) ResponseStructurePassenger {
 
 	response := ResponseStructurePassenger{
-		StatusCode: 500,
-		Data:       ResponseDataPassenger{},
-		Error:      err,
-		Message:    "Something wrong with your input data",
+		Data:    ResponseDataPassenger{},
+		Error:   err,
+		Message: "Something wrong with your input data",
 	}
 	return response
 }
@@ -83,12 +81,11 @@ func ResponsePassengers(c *fiber.Ctx, passengers []*entities.Passenger, err erro
 	}
 
 	response := ResponseStructurePassenger{
-		StatusCode: statusCode,
-		Data:       data,
-		Error:      err,
-		Message:    message,
+		Data:    data,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }
 
@@ -115,11 +112,10 @@ func ResponsePassengerCreate(c *fiber.Ctx, err error) error {
 		message = "Passenger has created"
 	}
 	response := ResponseStructurePassenger{
-		StatusCode: statusCode,
-		Error:      err,
-		Message:    message,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }
 
@@ -136,11 +132,10 @@ func ResponsePassengerUpdate(c *fiber.Ctx, err error) error {
 		message = "Passenger has updated"
 	}
 	response := ResponseStructurePassenger{
-		StatusCode: statusCode,
-		Error:      err,
-		Message:    message,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }
 
@@ -157,10 +152,9 @@ func ResponsePassengerDelete(c *fiber.Ctx, err error) error {
 		message = "Passenger has deleted"
 	}
 	response := ResponseStructurePassenger{
-		StatusCode: statusCode,
-		Error:      err,
-		Message:    message,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }

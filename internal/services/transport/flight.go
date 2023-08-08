@@ -7,10 +7,9 @@ import (
 )
 
 type ResponseStructureFlight struct {
-	StatusCode int                `json:"statusCode"`
-	Data       ResponseDataFlight `json:"data"`
-	Error      error              `json:"error"`
-	Message    string             `json:"message"`
+	Data    ResponseDataFlight `json:"data"`
+	Error   error              `json:"error"`
+	Message string             `json:"message"`
 }
 
 type ResponseDataFlight struct {
@@ -33,7 +32,7 @@ func ValidateFlightInsertData(c *fiber.Ctx) (*entities.Flight, error) {
 	err := c.BodyParser(flight)
 
 	if err != nil {
-		return flight, c.JSON(ResponseFlightInputError(err))
+		return flight, c.Status(500).JSON(ResponseFlightInputError(err))
 	}
 	return flight, nil
 }
@@ -44,7 +43,7 @@ func ValidateFlightUpdateData(c *fiber.Ctx) (*UpdateFlight, error) {
 	err := c.BodyParser(&updateFlightData)
 
 	if err != nil {
-		return &updateFlightData, c.JSON(ResponseFlightInputError(err))
+		return &updateFlightData, c.Status(500).JSON(ResponseFlightInputError(err))
 	}
 	return &updateFlightData, nil
 }
@@ -62,10 +61,9 @@ func ResponseFlightNotFound(c *fiber.Ctx, flight *entities.Flight, err error) er
 func ResponseFlightInputError(err error) ResponseStructureFlight {
 
 	response := ResponseStructureFlight{
-		StatusCode: 500,
-		Data:       ResponseDataFlight{},
-		Error:      err,
-		Message:    "Something wrong with your input data",
+		Data:    ResponseDataFlight{},
+		Error:   err,
+		Message: "Something wrong with your input data",
 	}
 	return response
 }
@@ -89,12 +87,11 @@ func ResponseFlights(c *fiber.Ctx, flights []*entities.Flight, err error) error 
 	}
 
 	response := ResponseStructureFlight{
-		StatusCode: statusCode,
-		Data:       data,
-		Error:      err,
-		Message:    message,
+		Data:    data,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }
 
@@ -121,11 +118,10 @@ func ResponseFlightCreate(c *fiber.Ctx, err error) error {
 		message = "Flight has created"
 	}
 	response := ResponseStructureFlight{
-		StatusCode: statusCode,
-		Error:      err,
-		Message:    message,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }
 
@@ -142,11 +138,10 @@ func ResponseFlightUpdate(c *fiber.Ctx, err error) error {
 		message = "Flight has updated"
 	}
 	response := ResponseStructureFlight{
-		StatusCode: statusCode,
-		Error:      err,
-		Message:    message,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }
 
@@ -163,10 +158,9 @@ func ResponseFlightDelete(c *fiber.Ctx, err error) error {
 		message = "Flight has deleted"
 	}
 	response := ResponseStructureFlight{
-		StatusCode: statusCode,
-		Error:      err,
-		Message:    message,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }

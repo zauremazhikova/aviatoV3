@@ -17,8 +17,9 @@ type ResponseDataBooking struct {
 }
 
 type UpdateBooking struct {
-	Name      string `json:"name"`
-	CountryID string `json:"countryID"`
+	BookingNumber string `json:"bookingNumber"`
+	FlightID      string `json:"flightID"`
+	PassengerID   string `json:"passengerID"`
 }
 
 // Валидация входящих данных

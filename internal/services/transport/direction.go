@@ -6,10 +6,9 @@ import (
 )
 
 type ResponseStructureDirection struct {
-	StatusCode int                   `json:"statusCode"`
-	Data       ResponseDataDirection `json:"data"`
-	Error      error                 `json:"error"`
-	Message    string                `json:"message"`
+	Data    ResponseDataDirection `json:"data"`
+	Error   error                 `json:"error"`
+	Message string                `json:"message"`
 }
 
 type ResponseDataDirection struct {
@@ -29,7 +28,7 @@ func ValidateDirectionInsertData(c *fiber.Ctx) (*entities.Direction, error) {
 	err := c.BodyParser(direction)
 
 	if err != nil {
-		return direction, c.JSON(ResponseDirectionInputError(err))
+		return direction, c.Status(500).JSON(ResponseDirectionInputError(err))
 	}
 	return direction, nil
 }
@@ -40,7 +39,7 @@ func ValidateDirectionUpdateData(c *fiber.Ctx) (*UpdateDirection, error) {
 	err := c.BodyParser(&updateDirectionData)
 
 	if err != nil {
-		return &updateDirectionData, c.JSON(ResponseDirectionInputError(err))
+		return &updateDirectionData, c.Status(500).JSON(ResponseDirectionInputError(err))
 	}
 	return &updateDirectionData, nil
 }
@@ -58,10 +57,9 @@ func ResponseDirectionNotFound(c *fiber.Ctx, direction *entities.Direction, err 
 func ResponseDirectionInputError(err error) ResponseStructureDirection {
 
 	response := ResponseStructureDirection{
-		StatusCode: 500,
-		Data:       ResponseDataDirection{},
-		Error:      err,
-		Message:    "Something wrong with your input data",
+		Data:    ResponseDataDirection{},
+		Error:   err,
+		Message: "Something wrong with your input data",
 	}
 	return response
 }
@@ -85,12 +83,11 @@ func ResponseDirections(c *fiber.Ctx, directions []*entities.Direction, err erro
 	}
 
 	response := ResponseStructureDirection{
-		StatusCode: statusCode,
-		Data:       data,
-		Error:      err,
-		Message:    message,
+		Data:    data,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }
 
@@ -117,11 +114,10 @@ func ResponseDirectionCreate(c *fiber.Ctx, err error) error {
 		message = "Direction has created"
 	}
 	response := ResponseStructureDirection{
-		StatusCode: statusCode,
-		Error:      err,
-		Message:    message,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }
 
@@ -138,11 +134,10 @@ func ResponseDirectionUpdate(c *fiber.Ctx, err error) error {
 		message = "Direction has updated"
 	}
 	response := ResponseStructureDirection{
-		StatusCode: statusCode,
-		Error:      err,
-		Message:    message,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }
 
@@ -159,10 +154,9 @@ func ResponseDirectionDelete(c *fiber.Ctx, err error) error {
 		message = "Direction has deleted"
 	}
 	response := ResponseStructureDirection{
-		StatusCode: statusCode,
-		Error:      err,
-		Message:    message,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }

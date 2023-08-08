@@ -6,10 +6,9 @@ import (
 )
 
 type ResponseStructureCountry struct {
-	StatusCode int                 `json:"statusCode"`
-	Data       ResponseDataCountry `json:"data"`
-	Error      error               `json:"error"`
-	Message    string              `json:"message"`
+	Data    ResponseDataCountry `json:"data"`
+	Error   error               `json:"error"`
+	Message string              `json:"message"`
 }
 
 type ResponseDataCountry struct {
@@ -27,7 +26,7 @@ func ValidateCountryInsertData(c *fiber.Ctx) (*entities.Country, error) {
 	err := c.BodyParser(country)
 
 	if err != nil {
-		return country, c.JSON(ResponseCountryInputError(err))
+		return country, c.Status(500).JSON(ResponseCountryInputError(err))
 	}
 	return country, nil
 }
@@ -38,7 +37,7 @@ func ValidateCountryUpdateData(c *fiber.Ctx) (*UpdateCountry, error) {
 	err := c.BodyParser(&updateCountryData)
 
 	if err != nil {
-		return &updateCountryData, c.JSON(ResponseCountryInputError(err))
+		return &updateCountryData, c.Status(500).JSON(ResponseCountryInputError(err))
 	}
 	return &updateCountryData, nil
 }
@@ -56,10 +55,9 @@ func ResponseCountryNotFound(c *fiber.Ctx, country *entities.Country, err error)
 func ResponseCountryInputError(err error) ResponseStructureCountry {
 
 	response := ResponseStructureCountry{
-		StatusCode: 500,
-		Data:       ResponseDataCountry{},
-		Error:      err,
-		Message:    "Something wrong with your input data",
+		Data:    ResponseDataCountry{},
+		Error:   err,
+		Message: "Something wrong with your input data",
 	}
 	return response
 }
@@ -83,12 +81,11 @@ func ResponseCountries(c *fiber.Ctx, countries []*entities.Country, err error) e
 	}
 
 	response := ResponseStructureCountry{
-		StatusCode: statusCode,
-		Data:       data,
-		Error:      err,
-		Message:    message,
+		Data:    data,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }
 
@@ -115,11 +112,10 @@ func ResponseCountryCreate(c *fiber.Ctx, err error) error {
 		message = "Country has created"
 	}
 	response := ResponseStructureCountry{
-		StatusCode: statusCode,
-		Error:      err,
-		Message:    message,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }
 
@@ -136,11 +132,10 @@ func ResponseCountryUpdate(c *fiber.Ctx, err error) error {
 		message = "Country has updated"
 	}
 	response := ResponseStructureCountry{
-		StatusCode: statusCode,
-		Error:      err,
-		Message:    message,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }
 
@@ -157,10 +152,9 @@ func ResponseCountryDelete(c *fiber.Ctx, err error) error {
 		message = "Country has deleted"
 	}
 	response := ResponseStructureCountry{
-		StatusCode: statusCode,
-		Error:      err,
-		Message:    message,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }

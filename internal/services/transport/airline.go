@@ -6,10 +6,9 @@ import (
 )
 
 type ResponseStructureAirline struct {
-	StatusCode int                 `json:"statusCode"`
-	Data       ResponseDataAirline `json:"data"`
-	Error      error               `json:"error"`
-	Message    string              `json:"message"`
+	Data    ResponseDataAirline `json:"data"`
+	Error   error               `json:"error"`
+	Message string              `json:"message"`
 }
 
 type ResponseDataAirline struct {
@@ -27,7 +26,7 @@ func ValidateAirlineInsertData(c *fiber.Ctx) (*entities.Airline, error) {
 	err := c.BodyParser(airline)
 
 	if err != nil {
-		return airline, c.JSON(ResponseAirlineInputError(err))
+		return airline, c.Status(500).JSON(ResponseAirlineInputError(err))
 	}
 	return airline, nil
 }
@@ -38,7 +37,7 @@ func ValidateAirlineUpdateData(c *fiber.Ctx) (*UpdateAirline, error) {
 	err := c.BodyParser(&updateAirlineData)
 
 	if err != nil {
-		return &updateAirlineData, c.JSON(ResponseAirlineInputError(err))
+		return &updateAirlineData, c.Status(500).JSON(ResponseAirlineInputError(err))
 	}
 	return &updateAirlineData, nil
 }
@@ -56,10 +55,9 @@ func ResponseAirlineNotFound(c *fiber.Ctx, airline *entities.Airline, err error)
 func ResponseAirlineInputError(err error) ResponseStructureAirline {
 
 	response := ResponseStructureAirline{
-		StatusCode: 500,
-		Data:       ResponseDataAirline{},
-		Error:      err,
-		Message:    "Something wrong with your input data",
+		Data:    ResponseDataAirline{},
+		Error:   err,
+		Message: "Something wrong with your input data",
 	}
 	return response
 }
@@ -83,12 +81,11 @@ func ResponseAirlines(c *fiber.Ctx, airlines []*entities.Airline, err error) err
 	}
 
 	response := ResponseStructureAirline{
-		StatusCode: statusCode,
-		Data:       data,
-		Error:      err,
-		Message:    message,
+		Data:    data,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }
 
@@ -115,11 +112,10 @@ func ResponseAirlineCreate(c *fiber.Ctx, err error) error {
 		message = "Airline has created"
 	}
 	response := ResponseStructureAirline{
-		StatusCode: statusCode,
-		Error:      err,
-		Message:    message,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }
 
@@ -136,11 +132,10 @@ func ResponseAirlineUpdate(c *fiber.Ctx, err error) error {
 		message = "Airline has updated"
 	}
 	response := ResponseStructureAirline{
-		StatusCode: statusCode,
-		Error:      err,
-		Message:    message,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }
 
@@ -157,10 +152,9 @@ func ResponseAirlineDelete(c *fiber.Ctx, err error) error {
 		message = "Airline has deleted"
 	}
 	response := ResponseStructureAirline{
-		StatusCode: statusCode,
-		Error:      err,
-		Message:    message,
+		Error:   err,
+		Message: message,
 	}
-	return c.JSON(response)
+	return c.Status(statusCode).JSON(response)
 
 }

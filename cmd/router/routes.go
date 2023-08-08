@@ -11,11 +11,11 @@ func SetupRoutes(app *fiber.App) {
 	api := app.Group("/api")
 	airlines := api.Group("/airline")
 	//bookings := api.Group("/booking")
-	//cities := api.Group("/city")
-	//countries := api.Group("/country")
+	cities := api.Group("/city")
+	countries := api.Group("/country")
 	//directions := api.Group("/direction")
 	//flights := api.Group("/flight")
-	//passengers := api.Group("/passenger")
+	passengers := api.Group("/passenger")
 
 	// airline
 	airlines.Get("/", handlers.GetAllAirlines)
@@ -23,6 +23,27 @@ func SetupRoutes(app *fiber.App) {
 	airlines.Post("/", handlers.CreateAirline)
 	airlines.Put("/:id", handlers.UpdateAirline)
 	airlines.Delete("/:id", handlers.DeleteAirline)
+
+	// city
+	cities.Get("/", handlers.GetAllCities)
+	cities.Get("/:id", handlers.GetSingleCity)
+	cities.Post("/", handlers.CreateCity)
+	cities.Put("/:id", handlers.UpdateCity)
+	cities.Delete("/:id", handlers.DeleteCity)
+
+	// country
+	countries.Get("/", handlers.GetAllCountries)
+	countries.Get("/:id", handlers.GetSingleCountry)
+	countries.Post("/", handlers.CreateCountry)
+	countries.Put("/:id", handlers.UpdateCountry)
+	countries.Delete("/:id", handlers.DeleteCountry)
+
+	// passenger
+	passengers.Get("/", handlers.GetAllPassengers)
+	passengers.Get("/:id", handlers.GetSinglePassenger)
+	passengers.Post("/", handlers.CreatePassenger)
+	passengers.Put("/:id", handlers.UpdatePassenger)
+	passengers.Delete("/:id", handlers.DeletePassenger)
 
 	// main
 	/*
@@ -34,20 +55,6 @@ func SetupRoutes(app *fiber.App) {
 		bookings.Post("/", booking.Create)
 		bookings.Put("/:id", booking.Update)
 		bookings.Delete("/:id", booking.Delete)
-
-		// city
-		cities.Get("/", city.GetAll)
-		cities.Get("/:id", city.GetSingle)
-		cities.Post("/", city.Create)
-		cities.Put("/:id", city.Update)
-		cities.Delete("/:id", city.Delete)
-
-		// country
-		countries.Get("/", country.GetAll)
-		countries.Get("/:id", country.GetSingle)
-		countries.Post("/", country.Create)
-		countries.Put("/:id", country.Update)
-		countries.Delete("/:id", country.Delete)
 
 		// direction
 		directions.Get("/", direction.GetAll)
@@ -63,11 +70,6 @@ func SetupRoutes(app *fiber.App) {
 		flights.Put("/:id", flight.Update)
 		flights.Delete("/:id", flight.Delete)
 
-		// passenger
-		passengers.Get("/", passenger.GetAll)
-		passengers.Get("/:id", passenger.GetSingle)
-		passengers.Post("/", passenger.Create)
-		passengers.Put("/:id", passenger.Update)
-		passengers.Delete("/:id", passenger.Delete)*/
+	*/
 
 }
