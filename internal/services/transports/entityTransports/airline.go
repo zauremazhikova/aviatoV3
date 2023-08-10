@@ -2,8 +2,11 @@ package entityTransports
 
 import (
 	"aviatoV3/internal/entities"
+	"aviatoV3/internal/services/handlers/entityHandlers"
 	"github.com/gofiber/fiber/v2"
 )
+
+// Response structure
 
 type ResponseStructureAirline struct {
 	Data    ResponseDataAirline `json:"data"`
@@ -15,151 +18,106 @@ type ResponseDataAirline struct {
 	Airlines []*entities.Airline `json:"airlines"`
 }
 
-type UpdateAirlineStructure struct {
-	Name string `json:"name"`
-}
+// Response making
 
-type InsertAirlineStructure struct {
-	Name string `json:"name"`
-}
-
-// Валидация входящих данных
-
-func ValidateAirlineInsertData(c *fiber.Ctx) (*InsertAirlineStructure, error) {
-
-	var insertAirlineStructure InsertAirlineStructure
-	err := c.BodyParser(&insertAirlineStructure)
-
-	if err != nil {
-		return &insertAirlineStructure, c.Status(500).JSON(ResponseAirlineInputError(err))
-	}
-	return &insertAirlineStructure, nil
-}
-
-func ValidateAirlineUpdateData(c *fiber.Ctx) (*UpdateAirlineStructure, error) {
-
-	var updateAirlineData UpdateAirlineStructure
-	err := c.BodyParser(&updateAirlineData)
-
-	if err != nil {
-		return &updateAirlineData, c.Status(500).JSON(ResponseAirlineInputError(err))
-	}
-	return &updateAirlineData, nil
-}
-
-// Ответы при наличии ошибок
-
-func ResponseAirlineNotFound(c *fiber.Ctx, airline *entities.Airline, err error) error {
-
-	if err != nil || airline.ID == "" {
-		return ResponseAirline(c, airline, err)
-	}
-	return nil
-}
-
-func ResponseAirlineInputError(err error) ResponseStructureAirline {
+func ResponseAirlines(c *fiber.Ctx, airlines []*entities.Airline, err error, statusCode int, message string) error {
 
 	response := ResponseStructureAirline{
-		Data:    ResponseDataAirline{},
-		Error:   err,
-		Message: "Something wrong with your input data",
-	}
-	return response
-}
-
-// Ответы
-
-func ResponseAirlines(c *fiber.Ctx, airlines []*entities.Airline, err error) error {
-
-	data := ResponseDataAirline{Airlines: airlines}
-	var statusCode int
-	var message string
-	if err != nil {
-		statusCode = 500
-		message = "Unexpected error"
-	} else if len(airlines) == 0 {
-		statusCode = 404
-		message = "Airlines not found"
-	} else {
-		statusCode = 201
-		message = "Airlines found"
-	}
-
-	response := ResponseStructureAirline{
-		Data:    data,
+		Data:    ResponseDataAirline{Airlines: airlines},
 		Error:   err,
 		Message: message,
 	}
 	return c.Status(statusCode).JSON(response)
-
 }
 
-func ResponseAirline(c *fiber.Ctx, airline *entities.Airline, err error) error {
+// Methods
+
+func GetAllAirlines(c *fiber.Ctx) error {
+
+	airlines, err := entityHandlers.GetAllAirlines()
+	if err != nil {
+		return ResponseAirlines(c, airlines, err, 500, "Unexpected error")
+	} else if len(airlines) == 0 {
+		return ResponseAirlines(c, airlines, err, 404, "Airlines not found")
+	}
+	return ResponseAirlines(c, airlines, err, 201, "Airlines found")
+}
+
+func GetSingleAirline(c *fiber.Ctx) error {
+
+	id := c.Params("id")
+	airline, err := entityHandlers.GetSingleAirline(id)
 
 	airlines := make([]*entities.Airline, 0)
 	if airline.ID != "" {
 		airlines = append(airlines, airline)
 	}
-	return ResponseAirlines(c, airlines, err)
+
+	if err != nil {
+		return ResponseAirlines(c, airlines, err, 500, "Unexpected error")
+	} else if len(airlines) == 0 {
+		return ResponseAirlines(c, airlines, err, 404, "Airline not found")
+	}
+
+	return ResponseAirlines(c, airlines, err, 201, "Airline found")
 
 }
 
-func ResponseAirlineCreate(c *fiber.Ctx, err error) error {
+func CreateAirline(c *fiber.Ctx) error {
 
-	var statusCode int
-	var message string
-
+	var insertStructure entityHandlers.InsertAirlineStructure
+	err := c.BodyParser(&insertStructure)
 	if err != nil {
-		statusCode = 500
-		message = "Unexpected error"
-	} else {
-		statusCode = 201
-		message = "Airline has created"
+		return ResponseAirlines(c, make([]*entities.Airline, 0), err, 500, "Something wrong with your input data")
 	}
-	response := ResponseStructureAirline{
-		Error:   err,
-		Message: message,
+
+	err = entityHandlers.CreateAirline(&insertStructure)
+	if err != nil {
+		return ResponseAirlines(c, make([]*entities.Airline, 0), err, 500, "Unexpected error")
 	}
-	return c.Status(statusCode).JSON(response)
+
+	return ResponseAirlines(c, make([]*entities.Airline, 0), err, 201, "Airline has created")
 
 }
 
-func ResponseAirlineUpdate(c *fiber.Ctx, err error) error {
+func UpdateAirline(c *fiber.Ctx) error {
 
-	var statusCode int
-	var message string
+	var updateAirlineData entityHandlers.UpdateAirlineStructure
+	err := c.BodyParser(&updateAirlineData)
 
 	if err != nil {
-		statusCode = 500
-		message = "Unexpected error"
-	} else {
-		statusCode = 201
-		message = "Airline has updated"
+		return ResponseAirlines(c, make([]*entities.Airline, 0), err, 500, "Something wrong with your input data")
 	}
-	response := ResponseStructureAirline{
-		Error:   err,
-		Message: message,
+
+	id := c.Params("id")
+	airline, err := entityHandlers.GetSingleAirline(id)
+	airlines := make([]*entities.Airline, 0)
+	if airline.ID == "" {
+		return ResponseAirlines(c, airlines, err, 404, "Airline not found")
 	}
-	return c.Status(statusCode).JSON(response)
+	err = entityHandlers.UpdateAirline(airline, &updateAirlineData)
+
+	if err != nil {
+		return ResponseAirlines(c, make([]*entities.Airline, 0), err, 500, "Unexpected error")
+	}
+	return ResponseAirlines(c, make([]*entities.Airline, 0), err, 201, "Airline has updated")
 
 }
 
-func ResponseAirlineDelete(c *fiber.Ctx, err error) error {
+func DeleteAirline(c *fiber.Ctx) error {
 
-	var statusCode int
-	var message string
+	id := c.Params("id")
+	airline, err := entityHandlers.GetSingleAirline(id)
+	airlines := make([]*entities.Airline, 0)
+	if airline.ID == "" {
+		return ResponseAirlines(c, airlines, err, 404, "Airline not found")
+	}
 
+	err = entityHandlers.DeleteAirline(id)
 	if err != nil {
-		statusCode = 500
-		message = "Unexpected error"
-	} else {
-		statusCode = 201
-		message = "Airline has deleted"
+		return ResponseAirlines(c, make([]*entities.Airline, 0), err, 500, "Unexpected error")
 	}
-	response := ResponseStructureAirline{
-		Error:   err,
-		Message: message,
-	}
-	return c.Status(statusCode).JSON(response)
+
+	return ResponseAirlines(c, make([]*entities.Airline, 0), err, 201, "Airline has deleted")
 
 }

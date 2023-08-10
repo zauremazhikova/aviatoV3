@@ -3,71 +3,54 @@ package entityHandlers
 import (
 	"aviatoV3/internal/entities"
 	"aviatoV3/internal/repositories"
-	"aviatoV3/internal/services/transports/entityTransports"
-	"github.com/gofiber/fiber/v2"
 )
 
-func GetAllAirlines(c *fiber.Ctx) error {
+// Validating structure
+
+type UpdateAirlineStructure struct {
+	Name string `json:"name"`
+}
+
+type InsertAirlineStructure struct {
+	Name string `json:"name"`
+}
+
+// Methods
+
+func GetAllAirlines() (a []*entities.Airline, err error) {
 
 	responseAirline, err := repositories.GetAirlines()
-	return entityTransports.ResponseAirlines(c, responseAirline, err)
+	return responseAirline, err
 
 }
 
-func GetSingleAirline(c *fiber.Ctx) error {
+func GetSingleAirline(id string) (a *entities.Airline, err error) {
 
-	id := c.Params("id")
 	airline, err := repositories.GetAirline(id)
-	return entityTransports.ResponseAirline(c, airline, err)
+	return airline, err
 
 }
 
-func CreateAirline(c *fiber.Ctx) error {
+func CreateAirline(insertStruct *InsertAirlineStructure) error {
 
-	insertStruct, err := entityTransports.ValidateAirlineInsertData(c)
-	if err != nil {
-		return err
-	}
 	airline := new(entities.Airline)
 	airline.Name = insertStruct.Name
-
-	err = repositories.CreateAirline(airline)
-	return entityTransports.ResponseAirlineCreate(c, err)
+	err := repositories.CreateAirline(airline)
+	return err
 
 }
 
-func UpdateAirline(c *fiber.Ctx) error {
-
-	id := c.Params("id")
-	airline, err := repositories.GetAirline(id)
-
-	err = entityTransports.ResponseAirlineNotFound(c, airline, err)
-	if err != nil {
-		return err
-	}
-
-	updateAirlineData, err := entityTransports.ValidateAirlineUpdateData(c)
-	if err != nil {
-		return err
-	}
+func UpdateAirline(airline *entities.Airline, updateAirlineData *UpdateAirlineStructure) error {
 
 	airline.Name = updateAirlineData.Name
-	err = repositories.UpdateAirline(airline)
+	err := repositories.UpdateAirline(airline)
+	return err
 
-	return entityTransports.ResponseAirlineUpdate(c, err)
 }
 
-func DeleteAirline(c *fiber.Ctx) error {
+func DeleteAirline(id string) error {
 
-	id := c.Params("id")
-	airline, err := repositories.GetAirline(id)
-
-	err = entityTransports.ResponseAirlineNotFound(c, airline, err)
-	if err != nil {
-		return err
-	}
-
-	err = repositories.DeleteAirline(id)
-	return entityTransports.ResponseAirlineDelete(c, err)
+	err := repositories.DeleteAirline(id)
+	return err
 
 }
