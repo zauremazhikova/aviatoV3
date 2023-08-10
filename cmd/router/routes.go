@@ -12,7 +12,7 @@ func SetupRoutes(app *fiber.App) {
 	airlines := api.Group("/airline")
 	//bookings := api.Group("/booking")
 	//cities := api.Group("/city")
-	//countries := api.Group("/country")
+	countries := api.Group("/country")
 	//directions := api.Group("/direction")
 	//flights := api.Group("/flight")
 	//passengers := api.Group("/passenger")
@@ -24,6 +24,14 @@ func SetupRoutes(app *fiber.App) {
 	airlines.Post("/", entityTransports.CreateAirline)
 	airlines.Put("/:id", entityTransports.UpdateAirline)
 	airlines.Delete("/:id", entityTransports.DeleteAirline)
+
+	// country
+	countries.Get("/", entityTransports.GetAllCountries)
+	countries.Get("/:id", entityTransports.GetSingleCountry)
+	countries.Post("/", entityTransports.CreateCountry)
+	countries.Put("/:id", entityTransports.UpdateCountry)
+	countries.Delete("/:id", entityTransports.DeleteCountry)
+
 	/*
 		// booking
 		bookings.Get("/", entityHandlers.GetAllBookings)
@@ -39,12 +47,7 @@ func SetupRoutes(app *fiber.App) {
 		cities.Put("/:id", entityHandlers.UpdateCity)
 		cities.Delete("/:id", entityHandlers.DeleteCity)
 
-		// country
-		countries.Get("/", entityHandlers.GetAllCountries)
-		countries.Get("/:id", entityHandlers.GetSingleCountry)
-		countries.Post("/", entityHandlers.CreateCountry)
-		countries.Put("/:id", entityHandlers.UpdateCountry)
-		countries.Delete("/:id", entityHandlers.DeleteCountry)
+
 
 		// direction
 		directions.Get("/", entityHandlers.GetAllDirections)

@@ -65,59 +65,65 @@ func GetSingleAirline(c *fiber.Ctx) error {
 
 func CreateAirline(c *fiber.Ctx) error {
 
+	airlines := make([]*entities.Airline, 0)
+
 	var insertStructure entityHandlers.InsertAirlineStructure
 	err := c.BodyParser(&insertStructure)
 	if err != nil {
-		return ResponseAirlines(c, make([]*entities.Airline, 0), err, 500, "Something wrong with your input data")
+		return ResponseAirlines(c, airlines, err, 500, "Something wrong with your input data")
 	}
 
 	err = entityHandlers.CreateAirline(&insertStructure)
 	if err != nil {
-		return ResponseAirlines(c, make([]*entities.Airline, 0), err, 500, "Unexpected error")
+		return ResponseAirlines(c, airlines, err, 500, "Unexpected error")
 	}
 
-	return ResponseAirlines(c, make([]*entities.Airline, 0), err, 201, "Airline has created")
+	return ResponseAirlines(c, airlines, err, 201, "Airline has created")
 
 }
 
 func UpdateAirline(c *fiber.Ctx) error {
 
+	airlines := make([]*entities.Airline, 0)
+
 	var updateAirlineData entityHandlers.UpdateAirlineStructure
 	err := c.BodyParser(&updateAirlineData)
 
 	if err != nil {
-		return ResponseAirlines(c, make([]*entities.Airline, 0), err, 500, "Something wrong with your input data")
+		return ResponseAirlines(c, airlines, err, 500, "Something wrong with your input data")
 	}
 
 	id := c.Params("id")
 	airline, err := entityHandlers.GetSingleAirline(id)
-	airlines := make([]*entities.Airline, 0)
+
 	if airline.ID == "" {
 		return ResponseAirlines(c, airlines, err, 404, "Airline not found")
 	}
 	err = entityHandlers.UpdateAirline(airline, &updateAirlineData)
 
 	if err != nil {
-		return ResponseAirlines(c, make([]*entities.Airline, 0), err, 500, "Unexpected error")
+		return ResponseAirlines(c, airlines, err, 500, "Unexpected error")
 	}
-	return ResponseAirlines(c, make([]*entities.Airline, 0), err, 201, "Airline has updated")
+	return ResponseAirlines(c, airlines, err, 201, "Airline has updated")
 
 }
 
 func DeleteAirline(c *fiber.Ctx) error {
 
+	airlines := make([]*entities.Airline, 0)
+
 	id := c.Params("id")
 	airline, err := entityHandlers.GetSingleAirline(id)
-	airlines := make([]*entities.Airline, 0)
+
 	if airline.ID == "" {
 		return ResponseAirlines(c, airlines, err, 404, "Airline not found")
 	}
 
 	err = entityHandlers.DeleteAirline(id)
 	if err != nil {
-		return ResponseAirlines(c, make([]*entities.Airline, 0), err, 500, "Unexpected error")
+		return ResponseAirlines(c, airlines, err, 500, "Unexpected error")
 	}
 
-	return ResponseAirlines(c, make([]*entities.Airline, 0), err, 201, "Airline has deleted")
+	return ResponseAirlines(c, airlines, err, 201, "Airline has deleted")
 
 }
