@@ -10,7 +10,7 @@ func GetCountries() (a []*entity.Country, err error) {
 	countries := make([]*entity.Country, 0)
 
 	db := database.DB()
-	rows, err := db.Query("SELECT ID, NAME, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM countries")
+	rows, err := db.Query("SELECT ID, NAME, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM countries WHERE DELETED_AT IS NULL")
 	_ = db.Close()
 	if err != nil {
 		return nil, err
@@ -32,7 +32,7 @@ func GetCountries() (a []*entity.Country, err error) {
 func GetCountry(id string) (*entity.Country, error) {
 
 	db := database.DB()
-	rows, err := db.Query("SELECT ID, NAME, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM countries WHERE ID = $1", id)
+	rows, err := db.Query("SELECT ID, NAME, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM countries WHERE DELETED_AT IS NULL AND ID = $1", id)
 	_ = db.Close()
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func CreateCountry(country *entity.Country) error {
 
 func UpdateCountry(country *entity.Country) error {
 	db := database.DB()
-	_, err := db.Query("UPDATE countries SET name = $2, updated_at = $3 WHERE id = $1", country.ID, country.Name, time.Now())
+	_, err := db.Query("UPDATE countries SET name = $2, updated_at = $3 WHERE DELETED_AT IS NULL AND id = $1", country.ID, country.Name, time.Now())
 
 	_ = db.Close()
 	if err != nil {

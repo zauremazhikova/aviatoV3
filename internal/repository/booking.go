@@ -11,7 +11,7 @@ func GetBookings() (a []*entity.Booking, err error) {
 	bookings := make([]*entity.Booking, 0)
 
 	db := database.DB()
-	rows, err := db.Query("SELECT ID, BOOKING_NUMBER, FLIGHT_ID, PASSENGER_ID, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM bookings")
+	rows, err := db.Query("SELECT ID, BOOKING_NUMBER, FLIGHT_ID, PASSENGER_ID, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM bookings WHERE DELETED_AT IS NULL")
 	_ = db.Close()
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func GetBookingsByFlightID(flightID string) (a []*entity.Booking, err error) {
 	bookings := make([]*entity.Booking, 0)
 
 	db := database.DB()
-	rows, err := db.Query("SELECT ID, BOOKING_NUMBER, FLIGHT_ID, PASSENGER_ID, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM bookings WHERE FLIGHT_ID = $1", flightID)
+	rows, err := db.Query("SELECT ID, BOOKING_NUMBER, FLIGHT_ID, PASSENGER_ID, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM bookings WHERE DELETED_AT IS NULL AND FLIGHT_ID = $1", flightID)
 	_ = db.Close()
 	if err != nil {
 		return nil, err
@@ -73,7 +73,7 @@ func GetBookingsByFlightID(flightID string) (a []*entity.Booking, err error) {
 func GetBooking(id string) (*entity.Booking, error) {
 
 	db := database.DB()
-	rows, err := db.Query("SELECT ID, BOOKING_NUMBER, FLIGHT_ID, PASSENGER_ID, CREATED_AT, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM bookings WHERE ID = $1", id)
+	rows, err := db.Query("SELECT ID, BOOKING_NUMBER, FLIGHT_ID, PASSENGER_ID, CREATED_AT, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM bookings WHERE DELETED_AT IS NULL AND ID = $1", id)
 	_ = db.Close()
 	if err != nil {
 		return nil, err
@@ -111,7 +111,7 @@ func CreateBooking(booking *entity.Booking) error {
 
 func UpdateBooking(booking *entity.Booking) error {
 	db := database.DB()
-	_, err := db.Query("UPDATE bookings SET booking_number = $2, flight_id = $3, passenger_id = $4, updated_at = $3 WHERE id = $1",
+	_, err := db.Query("UPDATE bookings SET booking_number = $2, flight_id = $3, passenger_id = $4, updated_at = $3 WHERE DELETED_AT IS NULL AND id = $1",
 		booking.ID, booking.BookingNumber, booking.Flight.ID, booking.Passenger.ID, time.Now())
 	_ = db.Close()
 	if err != nil {

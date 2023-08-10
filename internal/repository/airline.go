@@ -17,7 +17,7 @@ func GetAirlines() (a []*entity.Airline, err error) {
 	airlines := make([]*entity.Airline, 0)
 
 	db := database.DB()
-	rows, err := db.Query("SELECT ID, NAME, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM airlines")
+	rows, err := db.Query("SELECT ID, NAME, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM airlines WHERE DELETED_AT IS NULL")
 
 	_ = db.Close()
 	if err != nil {
@@ -39,7 +39,7 @@ func GetAirlines() (a []*entity.Airline, err error) {
 func GetAirline(id string) (*entity.Airline, error) {
 
 	db := database.DB()
-	rows, err := db.Query("SELECT ID, NAME, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM airlines WHERE ID = $1", id)
+	rows, err := db.Query("SELECT ID, NAME, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM airlines WHERE DELETED_AT IS NULL AND ID = $1", id)
 	_ = db.Close()
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func CreateAirline(airline *entity.Airline) error {
 
 func UpdateAirline(airline *entity.Airline) error {
 	db := database.DB()
-	_, err := db.Query("UPDATE airlines SET name = $2, updated_at = $3 WHERE id = $1", airline.ID, airline.Name, time.Now())
+	_, err := db.Query("UPDATE airlines SET name = $2, updated_at = $3 WHERE deleted_at IS NULL AND id = $1", airline.ID, airline.Name, time.Now())
 
 	_ = db.Close()
 	if err != nil {

@@ -11,7 +11,7 @@ func GetCities() (a []*entity.City, err error) {
 	cities := make([]*entity.City, 0)
 
 	db := database.DB()
-	rows, err := db.Query("SELECT ID, NAME, COUNTRY_ID, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM cities")
+	rows, err := db.Query("SELECT ID, NAME, COUNTRY_ID, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM cities WHERE DELETED_AT IS NULL")
 	_ = db.Close()
 	if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func GetCities() (a []*entity.City, err error) {
 func GetCity(id string) (*entity.City, error) {
 
 	db := database.DB()
-	rows, err := db.Query("SELECT ID, NAME, COUNTRY_ID, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM cities WHERE ID = $1", id)
+	rows, err := db.Query("SELECT ID, NAME, COUNTRY_ID, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM cities WHERE DELETED_AT IS NULL AND ID = $1", id)
 	_ = db.Close()
 	if err != nil {
 		return &entity.City{}, err
@@ -73,7 +73,7 @@ func CreateCity(city *entity.City) error {
 
 func UpdateCity(city *entity.City) error {
 	db := database.DB()
-	_, err := db.Query("UPDATE cities SET name = $2, updated_at = $3 WHERE id = $1", city.ID, city.Name, time.Now())
+	_, err := db.Query("UPDATE cities SET name = $2, updated_at = $3 WHERE DELETED_AT IS NULL AND id = $1", city.ID, city.Name, time.Now())
 
 	_ = db.Close()
 	if err != nil {

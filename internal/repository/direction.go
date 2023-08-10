@@ -11,7 +11,7 @@ func GetDirections() (a []*entity.Direction, err error) {
 	directions := make([]*entity.Direction, 0)
 
 	db := database.DB()
-	rows, err := db.Query("SELECT ID, ORIGIN_CITY_ID, DESTINATION_CITY_ID, AIRLINE_ID, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM directions")
+	rows, err := db.Query("SELECT ID, ORIGIN_CITY_ID, DESTINATION_CITY_ID, AIRLINE_ID, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM directions WHERE DELETED_AT IS NULL")
 	_ = db.Close()
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func GetDirections() (a []*entity.Direction, err error) {
 func GetDirection(id string) (*entity.Direction, error) {
 
 	db := database.DB()
-	rows, err := db.Query("SELECT ID, ORIGIN_CITY_ID, DESTINATION_CITY_ID, AIRLINE_ID, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM directions WHERE ID = $1", id)
+	rows, err := db.Query("SELECT ID, ORIGIN_CITY_ID, DESTINATION_CITY_ID, AIRLINE_ID, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM directions WHERE DELETED_AT IS NULL AND ID = $1", id)
 	_ = db.Close()
 	if err != nil {
 		return nil, err
@@ -89,7 +89,7 @@ func CreateDirection(direction *entity.Direction) error {
 
 func UpdateDirection(direction *entity.Direction) error {
 	db := database.DB()
-	_, err := db.Query("UPDATE directions SET origin_city_id = $2, destination_city_id = $3, airline_id = $4, updated_at = $5 WHERE id = $1", direction.ID, direction.OriginCity.ID, direction.DestinationCity.ID, direction.Airline.ID, time.Now())
+	_, err := db.Query("UPDATE directions SET origin_city_id = $2, destination_city_id = $3, airline_id = $4, updated_at = $5 WHERE DELETED_AT IS NULL AND id = $1", direction.ID, direction.OriginCity.ID, direction.DestinationCity.ID, direction.Airline.ID, time.Now())
 
 	_ = db.Close()
 	if err != nil {

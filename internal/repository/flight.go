@@ -10,7 +10,7 @@ func GetFlights() (a []*entity.Flight, err error) {
 	flights := make([]*entity.Flight, 0)
 
 	db := database.DB()
-	rows, err := db.Query("SELECT ID, FLIGHT_NUMBER, DIRECTION_ID, DEPARTURE_TIME, ARRIVAL_TIME, SEATS_NUMBER, PRICE, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM flights")
+	rows, err := db.Query("SELECT ID, FLIGHT_NUMBER, DIRECTION_ID, DEPARTURE_TIME, ARRIVAL_TIME, SEATS_NUMBER, PRICE, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM flights WHERE DELETED_AT IS NULL")
 	_ = db.Close()
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func GetFlightsByOriginCity(originCityID string) (a []*entity.Flight, err error)
 	flights := make([]*entity.Flight, 0)
 
 	db := database.DB()
-	rows, err := db.Query("SELECT f.ID, f.FLIGHT_NUMBER, f.DIRECTION_ID, f.DEPARTURE_TIME, f.ARRIVAL_TIME, f.SEATS_NUMBER, f.PRICE, f.CREATED_AT, COALESCE(f.UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(f.DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM flights AS f JOIN directions AS d ON f.direction_id = d.ID WHERE d.origin_city_id = $1", originCityID)
+	rows, err := db.Query("SELECT f.ID, f.FLIGHT_NUMBER, f.DIRECTION_ID, f.DEPARTURE_TIME, f.ARRIVAL_TIME, f.SEATS_NUMBER, f.PRICE, f.CREATED_AT, COALESCE(f.UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(f.DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM flights AS f JOIN directions AS d ON f.direction_id = d.ID WHERE f.deleted_at IS NULL AND d.origin_city_id = $1", originCityID)
 	_ = db.Close()
 	if err != nil {
 		return nil, err
@@ -95,7 +95,7 @@ func CreateFlight(flight *entity.Flight) error {
 
 func UpdateFlight(flight *entity.Flight) error {
 	db := database.DB()
-	_, err := db.Query("UPDATE flights SET FLIGHT_NUMBER = $2, DIRECTION_ID = $3, DEPARTURE_TIME = $4, ARRIVAL_TIME = $5, SEATS_NUMBER = $6, PRICE = $7, UPDATED_AT = $8 WHERE id = $1",
+	_, err := db.Query("UPDATE flights SET FLIGHT_NUMBER = $2, DIRECTION_ID = $3, DEPARTURE_TIME = $4, ARRIVAL_TIME = $5, SEATS_NUMBER = $6, PRICE = $7, UPDATED_AT = $8 WHERE DELETED_AT IS NULL AND id = $1",
 		flight.ID, flight.FlightNumber, flight.Direction.ID, flight.DepartureTime, flight.ArrivalTime, flight.SeatsNumber, flight.Price, time.Now())
 
 	_ = db.Close()

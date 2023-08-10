@@ -10,7 +10,7 @@ func GetPassengers() (a []*entity.Passenger, err error) {
 	countries := make([]*entity.Passenger, 0)
 
 	db := database.DB()
-	rows, err := db.Query("SELECT ID, NAME, PASSPORT, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM passengers")
+	rows, err := db.Query("SELECT ID, NAME, PASSPORT, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM passengers WHERE DELETED_AT IS NULL")
 	_ = db.Close()
 	if err != nil {
 		return nil, err
@@ -32,7 +32,7 @@ func GetPassengers() (a []*entity.Passenger, err error) {
 func GetPassenger(id string) (*entity.Passenger, error) {
 
 	db := database.DB()
-	rows, err := db.Query("SELECT ID, NAME, PASSPORT, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM passengers WHERE ID = $1", id)
+	rows, err := db.Query("SELECT ID, NAME, PASSPORT, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM passengers WHERE DELETED_AT IS NULL AND ID = $1", id)
 	_ = db.Close()
 	if err != nil {
 		return nil, err
@@ -62,7 +62,7 @@ func CreatePassenger(passenger *entity.Passenger) error {
 
 func UpdatePassenger(passenger *entity.Passenger) error {
 	db := database.DB()
-	_, err := db.Query("UPDATE passengers SET name = $2, passport = $3, updated_at = $4 WHERE id = $1", passenger.ID, passenger.Name, passenger.Passport, time.Now())
+	_, err := db.Query("UPDATE passengers SET name = $2, passport = $3, updated_at = $4 WHERE DELETED_AT IS NULL AND id = $1", passenger.ID, passenger.Name, passenger.Passport, time.Now())
 
 	_ = db.Close()
 	if err != nil {
