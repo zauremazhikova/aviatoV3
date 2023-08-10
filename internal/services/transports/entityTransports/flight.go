@@ -1,4 +1,4 @@
-package transport
+package entityTransports
 
 import (
 	"aviatoV3/internal/entities"

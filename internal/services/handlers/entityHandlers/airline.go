@@ -1,16 +1,16 @@
-package handlers
+package entityHandlers
 
 import (
 	"aviatoV3/internal/entities"
 	"aviatoV3/internal/repositories"
-	"aviatoV3/internal/services/transport"
+	"aviatoV3/internal/services/transports/entityTransports"
 	"github.com/gofiber/fiber/v2"
 )
 
 func GetAllAirlines(c *fiber.Ctx) error {
 
 	responseAirline, err := repositories.GetAirlines()
-	return transport.ResponseAirlines(c, responseAirline, err)
+	return entityTransports.ResponseAirlines(c, responseAirline, err)
 
 }
 
@@ -18,13 +18,13 @@ func GetSingleAirline(c *fiber.Ctx) error {
 
 	id := c.Params("id")
 	airline, err := repositories.GetAirline(id)
-	return transport.ResponseAirline(c, airline, err)
+	return entityTransports.ResponseAirline(c, airline, err)
 
 }
 
 func CreateAirline(c *fiber.Ctx) error {
 
-	insertStruct, err := transport.ValidateAirlineInsertData(c)
+	insertStruct, err := entityTransports.ValidateAirlineInsertData(c)
 	if err != nil {
 		return err
 	}
@@ -32,7 +32,7 @@ func CreateAirline(c *fiber.Ctx) error {
 	airline.Name = insertStruct.Name
 
 	err = repositories.CreateAirline(airline)
-	return transport.ResponseAirlineCreate(c, err)
+	return entityTransports.ResponseAirlineCreate(c, err)
 
 }
 
@@ -41,12 +41,12 @@ func UpdateAirline(c *fiber.Ctx) error {
 	id := c.Params("id")
 	airline, err := repositories.GetAirline(id)
 
-	err = transport.ResponseAirlineNotFound(c, airline, err)
+	err = entityTransports.ResponseAirlineNotFound(c, airline, err)
 	if err != nil {
 		return err
 	}
 
-	updateAirlineData, err := transport.ValidateAirlineUpdateData(c)
+	updateAirlineData, err := entityTransports.ValidateAirlineUpdateData(c)
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func UpdateAirline(c *fiber.Ctx) error {
 	airline.Name = updateAirlineData.Name
 	err = repositories.UpdateAirline(airline)
 
-	return transport.ResponseAirlineUpdate(c, err)
+	return entityTransports.ResponseAirlineUpdate(c, err)
 }
 
 func DeleteAirline(c *fiber.Ctx) error {
@@ -62,12 +62,12 @@ func DeleteAirline(c *fiber.Ctx) error {
 	id := c.Params("id")
 	airline, err := repositories.GetAirline(id)
 
-	err = transport.ResponseAirlineNotFound(c, airline, err)
+	err = entityTransports.ResponseAirlineNotFound(c, airline, err)
 	if err != nil {
 		return err
 	}
 
 	err = repositories.DeleteAirline(id)
-	return transport.ResponseAirlineDelete(c, err)
+	return entityTransports.ResponseAirlineDelete(c, err)
 
 }

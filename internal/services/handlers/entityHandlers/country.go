@@ -1,16 +1,16 @@
-package handlers
+package entityHandlers
 
 import (
 	"aviatoV3/internal/entities"
 	"aviatoV3/internal/repositories"
-	"aviatoV3/internal/services/transport"
+	"aviatoV3/internal/services/transports/entityTransports"
 	"github.com/gofiber/fiber/v2"
 )
 
 func GetAllCountries(c *fiber.Ctx) error {
 
 	responseCountry, err := repositories.GetCountries()
-	return transport.ResponseCountries(c, responseCountry, err)
+	return entityTransports.ResponseCountries(c, responseCountry, err)
 
 }
 
@@ -18,13 +18,13 @@ func GetSingleCountry(c *fiber.Ctx) error {
 
 	id := c.Params("id")
 	country, err := repositories.GetCountry(id)
-	return transport.ResponseCountry(c, country, err)
+	return entityTransports.ResponseCountry(c, country, err)
 
 }
 
 func CreateCountry(c *fiber.Ctx) error {
 
-	insertStruct, err := transport.ValidateCountryInsertData(c)
+	insertStruct, err := entityTransports.ValidateCountryInsertData(c)
 	if err != nil {
 		return err
 	}
@@ -32,7 +32,7 @@ func CreateCountry(c *fiber.Ctx) error {
 	country.Name = insertStruct.Name
 
 	err = repositories.CreateCountry(country)
-	return transport.ResponseCountryCreate(c, err)
+	return entityTransports.ResponseCountryCreate(c, err)
 
 }
 
@@ -41,12 +41,12 @@ func UpdateCountry(c *fiber.Ctx) error {
 	id := c.Params("id")
 	country, err := repositories.GetCountry(id)
 
-	err = transport.ResponseCountryNotFound(c, country, err)
+	err = entityTransports.ResponseCountryNotFound(c, country, err)
 	if err != nil {
 		return err
 	}
 
-	updateCountryData, err := transport.ValidateCountryUpdateData(c)
+	updateCountryData, err := entityTransports.ValidateCountryUpdateData(c)
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func UpdateCountry(c *fiber.Ctx) error {
 	country.Name = updateCountryData.Name
 	err = repositories.UpdateCountry(country)
 
-	return transport.ResponseCountryUpdate(c, err)
+	return entityTransports.ResponseCountryUpdate(c, err)
 }
 
 func DeleteCountry(c *fiber.Ctx) error {
@@ -62,12 +62,12 @@ func DeleteCountry(c *fiber.Ctx) error {
 	id := c.Params("id")
 	country, err := repositories.GetCountry(id)
 
-	err = transport.ResponseCountryNotFound(c, country, err)
+	err = entityTransports.ResponseCountryNotFound(c, country, err)
 	if err != nil {
 		return err
 	}
 
 	err = repositories.DeleteCountry(id)
-	return transport.ResponseCountryDelete(c, err)
+	return entityTransports.ResponseCountryDelete(c, err)
 
 }

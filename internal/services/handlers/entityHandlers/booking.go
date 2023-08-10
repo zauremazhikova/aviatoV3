@@ -1,16 +1,16 @@
-package handlers
+package entityHandlers
 
 import (
 	"aviatoV3/internal/entities"
 	"aviatoV3/internal/repositories"
-	"aviatoV3/internal/services/transport"
+	"aviatoV3/internal/services/transports/entityTransports"
 	"github.com/gofiber/fiber/v2"
 )
 
 func GetAllBookings(c *fiber.Ctx) error {
 
 	responseBookings, err := repositories.GetBookings()
-	return transport.ResponseBookings(c, responseBookings, err)
+	return entityTransports.ResponseBookings(c, responseBookings, err)
 
 }
 
@@ -18,25 +18,25 @@ func GetSingleBooking(c *fiber.Ctx) error {
 
 	id := c.Params("id")
 	booking, err := repositories.GetBooking(id)
-	return transport.ResponseBooking(c, booking, err)
+	return entityTransports.ResponseBooking(c, booking, err)
 
 }
 
 func CreateBooking(c *fiber.Ctx) error {
 
-	insertStruct, err := transport.ValidateBookingInsertData(c)
+	insertStruct, err := entityTransports.ValidateBookingInsertData(c)
 	if err != nil {
 		return err
 	}
 
 	passenger, err := repositories.GetPassenger(insertStruct.PassengerID)
-	err = transport.ResponseBookingPassengerNotFound(c, passenger, err)
+	err = entityTransports.ResponseBookingPassengerNotFound(c, passenger, err)
 	if err != nil {
 		return err
 	}
 
 	flight, err := repositories.GetFlight(insertStruct.FlightID)
-	err = transport.ResponseBookingFlightNotFound(c, flight, err)
+	err = entityTransports.ResponseBookingFlightNotFound(c, flight, err)
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func CreateBooking(c *fiber.Ctx) error {
 	booking.Flight = *flight
 
 	err = repositories.CreateBooking(booking)
-	return transport.ResponseBookingCreate(c, err)
+	return entityTransports.ResponseBookingCreate(c, err)
 
 }
 
@@ -56,24 +56,24 @@ func UpdateBooking(c *fiber.Ctx) error {
 	id := c.Params("id")
 	booking, err := repositories.GetBooking(id)
 
-	err = transport.ResponseBookingNotFound(c, booking, err)
+	err = entityTransports.ResponseBookingNotFound(c, booking, err)
 	if err != nil {
 		return err
 	}
 
-	updateStruct, err := transport.ValidateBookingUpdateData(c)
+	updateStruct, err := entityTransports.ValidateBookingUpdateData(c)
 	if err != nil {
 		return err
 	}
 
 	passenger, err := repositories.GetPassenger(updateStruct.PassengerID)
-	err = transport.ResponseBookingPassengerNotFound(c, passenger, err)
+	err = entityTransports.ResponseBookingPassengerNotFound(c, passenger, err)
 	if err != nil {
 		return err
 	}
 
 	flight, err := repositories.GetFlight(updateStruct.FlightID)
-	err = transport.ResponseBookingFlightNotFound(c, flight, err)
+	err = entityTransports.ResponseBookingFlightNotFound(c, flight, err)
 	if err != nil {
 		return err
 	}
@@ -84,7 +84,7 @@ func UpdateBooking(c *fiber.Ctx) error {
 
 	err = repositories.UpdateBooking(booking)
 
-	return transport.ResponseBookingUpdate(c, err)
+	return entityTransports.ResponseBookingUpdate(c, err)
 }
 
 func DeleteBooking(c *fiber.Ctx) error {
@@ -92,12 +92,12 @@ func DeleteBooking(c *fiber.Ctx) error {
 	id := c.Params("id")
 	booking, err := repositories.GetBooking(id)
 
-	err = transport.ResponseBookingNotFound(c, booking, err)
+	err = entityTransports.ResponseBookingNotFound(c, booking, err)
 	if err != nil {
 		return err
 	}
 
 	err = repositories.DeleteBooking(id)
-	return transport.ResponseBookingDelete(c, err)
+	return entityTransports.ResponseBookingDelete(c, err)
 
 }

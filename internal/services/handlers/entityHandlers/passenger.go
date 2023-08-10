@@ -1,16 +1,16 @@
-package handlers
+package entityHandlers
 
 import (
 	"aviatoV3/internal/entities"
 	"aviatoV3/internal/repositories"
-	"aviatoV3/internal/services/transport"
+	"aviatoV3/internal/services/transports/entityTransports"
 	"github.com/gofiber/fiber/v2"
 )
 
 func GetAllPassengers(c *fiber.Ctx) error {
 
 	responsePassenger, err := repositories.GetPassengers()
-	return transport.ResponsePassengers(c, responsePassenger, err)
+	return entityTransports.ResponsePassengers(c, responsePassenger, err)
 
 }
 
@@ -18,13 +18,13 @@ func GetSinglePassenger(c *fiber.Ctx) error {
 
 	id := c.Params("id")
 	passenger, err := repositories.GetPassenger(id)
-	return transport.ResponsePassenger(c, passenger, err)
+	return entityTransports.ResponsePassenger(c, passenger, err)
 
 }
 
 func CreatePassenger(c *fiber.Ctx) error {
 
-	insertStruct, err := transport.ValidatePassengerInsertData(c)
+	insertStruct, err := entityTransports.ValidatePassengerInsertData(c)
 	if err != nil {
 		return err
 	}
@@ -32,7 +32,7 @@ func CreatePassenger(c *fiber.Ctx) error {
 	passenger.Name = insertStruct.Name
 
 	err = repositories.CreatePassenger(passenger)
-	return transport.ResponsePassengerCreate(c, err)
+	return entityTransports.ResponsePassengerCreate(c, err)
 
 }
 
@@ -41,12 +41,12 @@ func UpdatePassenger(c *fiber.Ctx) error {
 	id := c.Params("id")
 	passenger, err := repositories.GetPassenger(id)
 
-	err = transport.ResponsePassengerNotFound(c, passenger, err)
+	err = entityTransports.ResponsePassengerNotFound(c, passenger, err)
 	if err != nil {
 		return err
 	}
 
-	updatePassengerData, err := transport.ValidatePassengerUpdateData(c)
+	updatePassengerData, err := entityTransports.ValidatePassengerUpdateData(c)
 	if err != nil {
 		return err
 	}
@@ -54,7 +54,7 @@ func UpdatePassenger(c *fiber.Ctx) error {
 	passenger.Name = updatePassengerData.Name
 	err = repositories.UpdatePassenger(passenger)
 
-	return transport.ResponsePassengerUpdate(c, err)
+	return entityTransports.ResponsePassengerUpdate(c, err)
 }
 
 func DeletePassenger(c *fiber.Ctx) error {
@@ -62,12 +62,12 @@ func DeletePassenger(c *fiber.Ctx) error {
 	id := c.Params("id")
 	passenger, err := repositories.GetPassenger(id)
 
-	err = transport.ResponsePassengerNotFound(c, passenger, err)
+	err = entityTransports.ResponsePassengerNotFound(c, passenger, err)
 	if err != nil {
 		return err
 	}
 
 	err = repositories.DeletePassenger(id)
-	return transport.ResponsePassengerDelete(c, err)
+	return entityTransports.ResponsePassengerDelete(c, err)
 
 }
