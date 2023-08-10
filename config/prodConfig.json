@@ -1,0 +1,8 @@
+{
+  "Host": "localhost",
+  "Port": 8080,
+  "Database": "aviato",
+  "Username": "postgres",
+  "Password": "778977",
+  "FlightStopMaxNumber": 5
+}

@@ -1,25 +1,31 @@
 package config
 
-const (
-	FlightStopMaxNumber = 5
+import (
+	"fmt"
+	"github.com/tkanos/gonfig"
 )
 
 type StorageConfig struct {
-	Host     string `json:"host"`
-	Port     int    `json:"port"`
-	Database string `json:"database"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Host                string `json:"Host"`
+	Port                int    `json:"Port"`
+	Database            string `json:"Database"`
+	Username            string `json:"Username"`
+	Password            string `json:"Password"`
+	FlightStopMaxNumber int    `json:"FlightStopMaxNumber"`
 }
 
-func GetConfig() StorageConfig {
+func GetConfig(params ...string) StorageConfig {
 
-	return StorageConfig{
-		Host:     "localhost",
-		Port:     8080,
-		Database: "aviato",
-		Username: "postgres",
-		Password: "778977",
+	configuration := StorageConfig{}
+	env := "prod"
+	if len(params) > 0 {
+		env = params[0]
 	}
+	fileName := fmt.Sprintf("./config/%sConfig.json", env)
+	err := gonfig.GetConf(fileName, &configuration)
+	if err != nil {
+		return configuration
+	}
+	return configuration
 
 }

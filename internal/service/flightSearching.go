@@ -64,7 +64,8 @@ func GetFlightsByOriginAndDestination(c *fiber.Ctx) error {
 		return err
 	}
 	// maxStop - это максимальное количество пересадок. Настраивается в config.
-	maxStop := config.FlightStopMaxNumber
+	appConfig := config.GetConfig()
+	maxStop := appConfig.FlightStopMaxNumber
 
 	findFlightsDFS(searchData.OriginCityID, searchData.DestinationCityID, maxStop, make([]*entity.Flight, 0), make([]string, 0))
 

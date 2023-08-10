@@ -17,6 +17,9 @@ func SetupRoutes(app *fiber.App) {
 	flights := api.Group("/flight")
 	passengers := api.Group("/passenger")
 
+	// main
+	api.Get("/", service.GetFlightsByOriginAndDestination)
+
 	// airline
 	airlines.Get("/", service.GetAllAirlines)
 	airlines.Get("/:id", service.GetSingleAirline)
@@ -65,8 +68,4 @@ func SetupRoutes(app *fiber.App) {
 	passengers.Post("/", service.CreatePassenger)
 	passengers.Put("/:id", service.UpdatePassenger)
 	passengers.Delete("/:id", service.DeletePassenger)
-
-	// main
-	api.Get("/", service.GetFlightsByOriginAndDestination)
-
 }
