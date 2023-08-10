@@ -1,7 +1,7 @@
 package router
 
 import (
-	"aviatoV3/internal/services/handlers/entityHandlers"
+	"aviatoV3/internal/service"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -18,12 +18,12 @@ func SetupRoutes(app *fiber.App) {
 	//passengers := api.Group("/passenger")
 
 	// airline
-	airlines.Get("/", entityHandlers.GetAllAirlines)
+	airlines.Get("/", service.GetAllAirlines)
 
-	airlines.Get("/:id", entityHandlers.GetSingleAirline)
-	airlines.Post("/", entityHandlers.CreateAirline)
-	airlines.Put("/:id", entityHandlers.UpdateAirline)
-	airlines.Delete("/:id", entityHandlers.DeleteAirline)
+	airlines.Get("/:id", service.GetSingleAirline)
+	airlines.Post("/", service.CreateAirline)
+	airlines.Put("/:id", service.UpdateAirline)
+	airlines.Delete("/:id", service.DeleteAirline)
 
 	// country
 	/*

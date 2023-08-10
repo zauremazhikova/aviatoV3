@@ -1,14 +1,14 @@
-package repositories
+package repository
 
 import (
 	"aviatoV3/internal/database"
-	"aviatoV3/internal/entities"
+	"aviatoV3/internal/entity"
 	"fmt"
 	"time"
 )
 
-func GetDirections() (a []*entities.Direction, err error) {
-	directions := make([]*entities.Direction, 0)
+func GetDirections() (a []*entity.Direction, err error) {
+	directions := make([]*entity.Direction, 0)
 
 	db := database.DB()
 	rows, err := db.Query("SELECT ID, ORIGIN_CITY_ID, DESTINATION_CITY_ID, AIRLINE_ID, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM directions")
@@ -18,7 +18,7 @@ func GetDirections() (a []*entities.Direction, err error) {
 	}
 
 	for rows.Next() {
-		var direction entities.Direction
+		var direction entity.Direction
 		var originCityID string
 		var destinationCityID string
 		var airlineCityID string
@@ -44,7 +44,7 @@ func GetDirections() (a []*entities.Direction, err error) {
 	return directions, nil
 }
 
-func GetDirection(id string) (*entities.Direction, error) {
+func GetDirection(id string) (*entity.Direction, error) {
 
 	db := database.DB()
 	rows, err := db.Query("SELECT ID, ORIGIN_CITY_ID, DESTINATION_CITY_ID, AIRLINE_ID, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM directions WHERE ID = $1", id)
@@ -53,7 +53,7 @@ func GetDirection(id string) (*entities.Direction, error) {
 		return nil, err
 	}
 
-	var direction entities.Direction
+	var direction entity.Direction
 	var originCityID string
 	var destinationCityID string
 	var airlineCityID string
@@ -61,7 +61,7 @@ func GetDirection(id string) (*entities.Direction, error) {
 	for rows.Next() {
 		err := rows.Scan(&direction.ID, &originCityID, &destinationCityID, &airlineCityID, &direction.CreatedAt, &direction.UpdatedAt, &direction.DeletedAt)
 		if err != nil {
-			return &entities.Direction{}, err
+			return &entity.Direction{}, err
 		}
 	}
 	currOriginCity, _ := GetCity(originCityID)
@@ -76,7 +76,7 @@ func GetDirection(id string) (*entities.Direction, error) {
 	return &direction, nil
 }
 
-func CreateDirection(direction *entities.Direction) error {
+func CreateDirection(direction *entity.Direction) error {
 	db := database.DB()
 	_, err := db.Query("INSERT INTO directions (origin_city_id, destination_city_id, airline_id, created_at) VALUES ($1, $2, $3, $4)", direction.OriginCity.ID, direction.DestinationCity.ID, direction.Airline.ID, time.Now())
 
@@ -87,7 +87,7 @@ func CreateDirection(direction *entities.Direction) error {
 	return nil
 }
 
-func UpdateDirection(direction *entities.Direction) error {
+func UpdateDirection(direction *entity.Direction) error {
 	db := database.DB()
 	_, err := db.Query("UPDATE directions SET origin_city_id = $2, destination_city_id = $3, airline_id = $4, updated_at = $5 WHERE id = $1", direction.ID, direction.OriginCity.ID, direction.DestinationCity.ID, direction.Airline.ID, time.Now())
 
