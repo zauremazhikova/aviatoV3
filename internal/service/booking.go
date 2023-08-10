@@ -3,6 +3,7 @@ package service
 import (
 	"aviatoV3/internal/entity"
 	"aviatoV3/internal/repository"
+	"errors"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -70,6 +71,23 @@ func BookingUpdateValidation(c *fiber.Ctx, bookings []*entity.Booking) (*Booking
 
 }
 
+// Checking if the flight doesn't have seats
+
+func CheckFlightBookingAvailability(flight *entity.Flight) (bool, error) {
+
+	currentBookings, err := repository.GetBookingsByFlightID(flight.ID)
+
+	if err != nil {
+		return false, err
+	}
+
+	if flight.SeatsNumber <= len(currentBookings) {
+		return false, errors.New("flight is full")
+	}
+
+	return true, nil
+}
+
 // Methods
 
 func GetAllBookings(c *fiber.Ctx) error {
@@ -119,6 +137,11 @@ func CreateBooking(c *fiber.Ctx) error {
 	passenger, err := repository.GetPassenger(insertStructure.PassengerID)
 	if err != nil || passenger.ID == "" {
 		return BookingResponse(c, bookings, err, 404, "Passenger not found")
+	}
+
+	checkingAvailability, err := CheckFlightBookingAvailability(flight)
+	if checkingAvailability == false {
+		return c.Status(404).JSON(fiber.Map{"status": "error", "message": "Flight is not available", "data": err})
 	}
 
 	booking := new(entity.Booking)

@@ -67,9 +67,6 @@ func SetupRoutes(app *fiber.App) {
 	passengers.Delete("/:id", service.DeletePassenger)
 
 	// main
-	/*
-		api.Get("/", handlers.GetFlightsByOriginAndDestination)
-
-	*/
+	api.Get("/", service.GetFlightsByOriginAndDestination)
 
 }
