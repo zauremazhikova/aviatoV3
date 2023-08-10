@@ -10,11 +10,11 @@ func SetupRoutes(app *fiber.App) {
 	// grouping
 	api := app.Group("/api")
 	airlines := api.Group("/airline")
-	//bookings := api.Group("/booking")
+	bookings := api.Group("/booking")
 	cities := api.Group("/city")
 	countries := api.Group("/country")
 	directions := api.Group("/direction")
-	//flights := api.Group("/flight")
+	flights := api.Group("/flight")
 	passengers := api.Group("/passenger")
 
 	// airline
@@ -23,6 +23,13 @@ func SetupRoutes(app *fiber.App) {
 	airlines.Post("/", service.CreateAirline)
 	airlines.Put("/:id", service.UpdateAirline)
 	airlines.Delete("/:id", service.DeleteAirline)
+
+	// booking
+	bookings.Get("/", service.GetAllBookings)
+	bookings.Get("/:id", service.GetSingleBooking)
+	bookings.Post("/", service.CreateBooking)
+	bookings.Put("/:id", service.UpdateBooking)
+	bookings.Delete("/:id", service.DeleteBooking)
 
 	// city
 	cities.Get("/", service.GetAllCities)
@@ -45,29 +52,19 @@ func SetupRoutes(app *fiber.App) {
 	directions.Put("/:id", service.UpdateDirection)
 	directions.Delete("/:id", service.DeleteDirection)
 
+	// flight
+	flights.Get("/", service.GetAllFlights)
+	flights.Get("/:id", service.GetSingleFlight)
+	flights.Post("/", service.CreateFlight)
+	flights.Put("/:id", service.UpdateFlight)
+	flights.Delete("/:id", service.DeleteFlight)
+
 	// passenger
 	passengers.Get("/", service.GetAllPassengers)
 	passengers.Get("/:id", service.GetSinglePassenger)
 	passengers.Post("/", service.CreatePassenger)
 	passengers.Put("/:id", service.UpdatePassenger)
 	passengers.Delete("/:id", service.DeletePassenger)
-
-	/*
-		// booking
-		bookings.Get("/", entityHandlers.GetAllBookings)
-		bookings.Get("/:id", entityHandlers.GetSingleBooking)
-		bookings.Post("/", entityHandlers.CreateBooking)
-		bookings.Put("/:id", entityHandlers.UpdateBooking)
-		bookings.Delete("/:id", entityHandlers.DeleteBooking)
-
-		// flight
-		flights.Get("/", entityHandlers.GetAllFlights)
-		flights.Get("/:id", entityHandlers.GetSingleFlight)
-		flights.Post("/", entityHandlers.CreateFlight)
-		flights.Put("/:id", entityHandlers.UpdateFlight)
-		flights.Delete("/:id", entityHandlers.DeleteFlight)
-
-	*/
 
 	// main
 	/*

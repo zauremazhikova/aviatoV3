@@ -23,7 +23,6 @@ func GetBookings() (a []*entity.Booking, err error) {
 		var passengerID string
 		err := rows.Scan(&booking.ID, &booking.BookingNumber, &flightID, &passengerID, &booking.CreatedAt, &booking.UpdatedAt, &booking.DeletedAt)
 		if err != nil {
-			fmt.Println(err)
 			return bookings, err
 		} else {
 			currentFlight, _ := GetFlight(flightID)
@@ -31,7 +30,6 @@ func GetBookings() (a []*entity.Booking, err error) {
 
 			currentPassenger, _ := GetPassenger(passengerID)
 			booking.Passenger = *currentPassenger
-
 			bookings = append(bookings, &booking)
 		}
 	}
@@ -73,7 +71,7 @@ func GetBookingsByFlightID(flightID string) (a []*entity.Booking, err error) {
 func GetBooking(id string) (*entity.Booking, error) {
 
 	db := database.DB()
-	rows, err := db.Query("SELECT ID, BOOKING_NUMBER, FLIGHT_ID, PASSENGER_ID, CREATED_AT, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM bookings WHERE DELETED_AT IS NULL AND ID = $1", id)
+	rows, err := db.Query("SELECT ID, BOOKING_NUMBER, FLIGHT_ID, PASSENGER_ID, CREATED_AT, COALESCE(UPDATED_AT, DATE('0001-01-01')) AS UPDATED_AT, COALESCE(DELETED_AT, DATE('0001-01-01')) AS DELETED_AT FROM bookings WHERE DELETED_AT IS NULL AND ID = $1", id)
 	_ = db.Close()
 	if err != nil {
 		return nil, err
@@ -86,6 +84,7 @@ func GetBooking(id string) (*entity.Booking, error) {
 	for rows.Next() {
 		err := rows.Scan(&booking.ID, &booking.BookingNumber, &flightID, &passengerID, &booking.CreatedAt, &booking.UpdatedAt, &booking.DeletedAt)
 		if err != nil {
+			fmt.Println("fuck", err)
 			return &entity.Booking{}, err
 		}
 	}

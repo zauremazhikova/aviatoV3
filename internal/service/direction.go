@@ -21,14 +21,12 @@ type DirectionResponseData struct {
 // Validation structures
 
 type DirectionUpdateStructure struct {
-	Name              string `json:"name"`
 	OriginCityID      string `json:"originCityID"`
 	DestinationCityID string `json:"destinationCityID"`
 	AirlineID         string `json:"airlineID"`
 }
 
 type DirectionInsertStructure struct {
-	Name              string `json:"name"`
 	OriginCityID      string `json:"originCityID"`
 	DestinationCityID string `json:"destinationCityID"`
 	AirlineID         string `json:"airlineID"`
