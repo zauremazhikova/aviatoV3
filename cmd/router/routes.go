@@ -1,7 +1,7 @@
 package router
 
 import (
-	"aviatoV3/internal/services/transports/entityTransports"
+	"aviatoV3/internal/services/handlers/entityHandlers"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -12,25 +12,33 @@ func SetupRoutes(app *fiber.App) {
 	airlines := api.Group("/airline")
 	//bookings := api.Group("/booking")
 	//cities := api.Group("/city")
-	countries := api.Group("/country")
+	//countries := api.Group("/country")
 	//directions := api.Group("/direction")
 	//flights := api.Group("/flight")
 	//passengers := api.Group("/passenger")
 
 	// airline
-	airlines.Get("/", entityTransports.GetAllAirlines)
+	airlines.Get("/", entityHandlers.GetAllAirlines)
 
-	airlines.Get("/:id", entityTransports.GetSingleAirline)
-	airlines.Post("/", entityTransports.CreateAirline)
-	airlines.Put("/:id", entityTransports.UpdateAirline)
-	airlines.Delete("/:id", entityTransports.DeleteAirline)
+	airlines.Get("/:id", entityHandlers.GetSingleAirline)
+	airlines.Post("/", entityHandlers.CreateAirline)
+	airlines.Put("/:id", entityHandlers.UpdateAirline)
+	airlines.Delete("/:id", entityHandlers.DeleteAirline)
 
 	// country
-	countries.Get("/", entityTransports.GetAllCountries)
-	countries.Get("/:id", entityTransports.GetSingleCountry)
-	countries.Post("/", entityTransports.CreateCountry)
-	countries.Put("/:id", entityTransports.UpdateCountry)
-	countries.Delete("/:id", entityTransports.DeleteCountry)
+	/*
+		countries.Get("/", entityHandlers.GetAllCountries)
+		countries.Get("/:id", entityHandlers.GetSingleCountry)
+		countries.Post("/", entityHandlers.CreateCountry)
+		countries.Put("/:id", entityHandlers.UpdateCountry)
+		countries.Delete("/:id", entityHandlers.DeleteCountry)
+
+		// passenger
+		passengers.Get("/", entityHandlers.GetAllPassengers)
+		passengers.Get("/:id", entityHandlers.GetSinglePassenger)
+		passengers.Post("/", entityHandlers.CreatePassenger)
+		passengers.Put("/:id", entityHandlers.UpdatePassenger)
+		passengers.Delete("/:id", entityHandlers.DeletePassenger)*/
 
 	/*
 		// booking
@@ -63,12 +71,7 @@ func SetupRoutes(app *fiber.App) {
 		flights.Put("/:id", entityHandlers.UpdateFlight)
 		flights.Delete("/:id", entityHandlers.DeleteFlight)
 
-		// passenger
-		passengers.Get("/", entityHandlers.GetAllPassengers)
-		passengers.Get("/:id", entityHandlers.GetSinglePassenger)
-		passengers.Post("/", entityHandlers.CreatePassenger)
-		passengers.Put("/:id", entityHandlers.UpdatePassenger)
-		passengers.Delete("/:id", entityHandlers.DeletePassenger)*/
+	*/
 
 	// main
 	/*
