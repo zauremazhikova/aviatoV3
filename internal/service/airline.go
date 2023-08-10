@@ -56,13 +56,13 @@ func AirlineCreateValidation(c *fiber.Ctx, airlines []*entity.Airline) (*Airline
 
 func AirlineUpdateValidation(c *fiber.Ctx, airlines []*entity.Airline) (*AirlineUpdateStructure, error) {
 
-	var updateAirlineData AirlineUpdateStructure
-	err := c.BodyParser(&updateAirlineData)
+	var updateStructure AirlineUpdateStructure
+	err := c.BodyParser(&updateStructure)
 
 	if err != nil {
 		err = AirlineResponse(c, airlines, err, 500, "Something wrong with your input data")
 	}
-	return &updateAirlineData, err
+	return &updateStructure, err
 
 }
 
