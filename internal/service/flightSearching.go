@@ -1,7 +1,7 @@
 package service
 
 import (
-	"aviatoV3/configs"
+	"aviatoV3/config"
 	"aviatoV3/internal/entity"
 	"aviatoV3/internal/repository"
 	"github.com/gofiber/fiber/v2"
@@ -64,7 +64,7 @@ func GetFlightsByOriginAndDestination(c *fiber.Ctx) error {
 		return err
 	}
 	// maxStop - это максимальное количество пересадок. Настраивается в config.
-	maxStop := configs.FlightStopMaxNumber
+	maxStop := config.FlightStopMaxNumber
 
 	findFlightsDFS(searchData.OriginCityID, searchData.DestinationCityID, maxStop, make([]*entity.Flight, 0), make([]string, 0))
 

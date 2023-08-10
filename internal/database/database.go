@@ -1,14 +1,14 @@
 package database
 
 import (
-	"aviatoV3/configs"
+	"aviatoV3/config"
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
 )
 
 func DB() *sql.DB {
-	dbConfig := configs.GetConfig()
+	dbConfig := config.GetConfig()
 	connStr := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		dbConfig.Host, dbConfig.Port, dbConfig.Username, dbConfig.Password, dbConfig.Database)
 
