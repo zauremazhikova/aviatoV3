@@ -39,6 +39,8 @@ func FlightVariantsResponse(c *fiber.Ctx, flights [][]*entity.Flight, err error,
 	return c.Status(statusCode).JSON(response)
 }
 
+// Validation
+
 func FlightVariantsValidation(c *fiber.Ctx, flights [][]*entity.Flight) (*FlightVariantsSearchStruct, error) {
 
 	var searchStructure FlightVariantsSearchStruct
@@ -50,6 +52,8 @@ func FlightVariantsValidation(c *fiber.Ctx, flights [][]*entity.Flight) (*Flight
 	return &searchStructure, err
 
 }
+
+// Flight searching
 
 func GetFlightsByOriginAndDestination(c *fiber.Ctx) error {
 
